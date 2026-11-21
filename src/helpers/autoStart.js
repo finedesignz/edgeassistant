@@ -6,6 +6,8 @@ const { app } = require("electron");
 const linuxAutostart = require("./linuxAutostart");
 const {
   getLoginItemArgs,
+  resolveLoginItemWrite,
+  needsDevLoginItemRemoval,
   resolveAutoStartState,
   needsHiddenFlagMigration,
   wasLaunchedHidden,
@@ -19,7 +21,7 @@ function readLoginItemSettings() {
 
 function writeLoginItem(enabled) {
   app.setLoginItemSettings({
-    openAtLogin: enabled,
+    ...resolveLoginItemWrite({ enabled, isPackaged: app.isPackaged }),
     args: getLoginItemArgs(process.platform),
   });
 }
@@ -32,6 +34,7 @@ function getAutoStartState() {
   return resolveAutoStartState({
     platform: process.platform,
     loginItemSettings: readLoginItemSettings(),
+    isPackaged: app.isPackaged,
   });
 }
 
@@ -57,6 +60,11 @@ function syncAutoStartEntry() {
   if (isLinux()) return linuxAutostart.syncAutostartEntry();
 
   const loginItemSettings = readLoginItemSettings();
+  if (needsDevLoginItemRemoval({ isPackaged: app.isPackaged, loginItemSettings })) {
+    writeLoginItem(false);
+    return true;
+  }
+  if (!app.isPackaged) return false;
   if (!needsHiddenFlagMigration({ platform: process.platform, loginItemSettings })) return false;
 
   writeLoginItem(true);
