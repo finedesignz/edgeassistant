@@ -13,8 +13,22 @@ function getLoginItemArgs(platform) {
   return platform === "win32" ? [HIDDEN_LAUNCH_FLAG] : [];
 }
 
+// An unpackaged build runs as `electron.exe` with no app path, so a login item
+// written from it launches the bare Electron welcome window at sign-in. Dev
+// builds therefore never auto-start, and never hold a login item.
+function resolveLoginItemWrite({ enabled, isPackaged }) {
+  return { openAtLogin: !!enabled && !!isPackaged };
+}
+
+// A dev run that finds a login item (left by an earlier build) must remove it.
+function needsDevLoginItemRemoval({ isPackaged, loginItemSettings }) {
+  if (isPackaged) return false;
+  return !!loginItemSettings.openAtLogin || !!loginItemSettings.executableWillLaunchAtLogin;
+}
+
 // For the platforms setLoginItemSettings covers: win32 and darwin.
-function resolveAutoStartState({ platform, loginItemSettings }) {
+function resolveAutoStartState({ platform, loginItemSettings, isPackaged = true }) {
+  if (!isPackaged) return { enabled: false, requiresApproval: false };
   if (platform === "win32") {
     // openAtLogin only checks whether the Run entry matches this executable and
     // args; it ignores Explorer's StartupApproved key, which is what Task Manager
@@ -75,6 +89,8 @@ function getRelaunchWaiter({ launcherPath, args, pid }) {
 module.exports = {
   HIDDEN_LAUNCH_FLAG,
   getLoginItemArgs,
+  resolveLoginItemWrite,
+  needsDevLoginItemRemoval,
   resolveAutoStartState,
   needsHiddenFlagMigration,
   wasLaunchedHidden,
