@@ -86,7 +86,9 @@ export function stepSttRetry(state, { signedIn, notice }) {
 /**
  * What the Speech-to-Text settings show after the endpoint refused the request
  * with 401/403. "titaniumSignIn" replaces the API-key advice for our own host
- * while signed out; any other refusal without a key keeps the generic message.
+ * while signed out; "titaniumNoLicense" replaces it when signed in without a license
+ * (`titaniumReason` "no_license"). Never an API key for our own host. Any other refusal
+ * without a key keeps the generic message.
  */
 export function resolveSttEndpointNotice({
   refused,
@@ -94,8 +96,12 @@ export function resolveSttEndpointNotice({
   isTitaniumEndpoint,
   titaniumEnabled,
   titaniumSignedIn,
+  titaniumReason,
 }) {
   if (!refused) return null;
   if (isTitaniumEndpoint && titaniumEnabled && !titaniumSignedIn) return "titaniumSignIn";
+  if (isTitaniumEndpoint && titaniumEnabled && titaniumReason === "no_license") {
+    return "titaniumNoLicense";
+  }
   return hasApiKey ? null : "unauthorized";
 }

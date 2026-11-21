@@ -1222,6 +1222,7 @@ export default function TranscriptionModelPicker({
         }),
         titaniumEnabled: TITANIUM_ENABLED,
         titaniumSignedIn: titaniumAuth.signedIn,
+        titaniumReason: titaniumAuth.reason,
       })
     : null;
   // The check's config does not change when Titanium signs in, so ask again explicitly.
@@ -1238,7 +1239,9 @@ export default function TranscriptionModelPicker({
   const customFailureReason =
     sttNotice === "titaniumSignIn"
       ? t("transcription.titaniumSignIn.message")
-      : sttNotice === "unauthorized"
+      : sttNotice === "titaniumNoLicense"
+        ? t("titaniumAccount.license.reasons.no_license")
+        : sttNotice === "unauthorized"
         ? t("reasoning.custom.endpointUnauthorized")
         : undefined;
 

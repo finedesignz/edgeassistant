@@ -91,6 +91,34 @@ test("STT notice: sign-in for our host while signed out, generic otherwise", asy
   assert.equal(resolveSttEndpointNotice({ ...ours, refused: false }), null);
 });
 
+test("STT notice: no-license notice for our host when signed in without a license", async () => {
+  const { resolveSttEndpointNotice } = await load();
+  const ours = {
+    refused: true,
+    hasApiKey: false,
+    isTitaniumEndpoint: true,
+    titaniumEnabled: true,
+    titaniumSignedIn: true,
+  };
+  assert.equal(
+    resolveSttEndpointNotice({ ...ours, titaniumReason: "no_license" }),
+    "titaniumNoLicense"
+  );
+  assert.equal(
+    resolveSttEndpointNotice({ ...ours, hasApiKey: true, titaniumReason: "no_license" }),
+    "titaniumNoLicense"
+  );
+  assert.equal(
+    resolveSttEndpointNotice({ ...ours, titaniumSignedIn: false, titaniumReason: "no_license" }),
+    "titaniumSignIn"
+  );
+  assert.equal(
+    resolveSttEndpointNotice({ ...ours, isTitaniumEndpoint: false, titaniumReason: "no_license" }),
+    "unauthorized"
+  );
+  assert.equal(resolveSttEndpointNotice({ ...ours, titaniumReason: "expired" }), "unauthorized");
+});
+
 test("account session: Titanium decides without hosted cloud, upstream otherwise", async () => {
   const { resolveAccountSignedIn } = await load();
   const base = { titaniumSignedIn: true, upstreamSignedIn: false };
