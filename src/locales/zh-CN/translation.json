@@ -5211,8 +5211,7 @@
     "outdatedHint": "此 CLI 版本低于应用测试所用的版本。请更新后选择重新检测。",
     "testOk": "测试通过。",
     "claude": {
-      "toggleLabel": "启用 Claude 席位",
-      "notice": "Anthropic 的条款可能不允许在第三方应用中使用 Claude 订阅。启用即表示风险自负。"
+      "toggleLabel": "启用 Claude 席位"
     },
     "install": {
       "title": "安装 {{seat}}",

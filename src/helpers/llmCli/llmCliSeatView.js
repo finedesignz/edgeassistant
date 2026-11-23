@@ -55,7 +55,6 @@ export function seatViewModel(seat, state, prefs = {}, platform = "win32") {
     disabled: !enabled,
     showToggle: isClaude,
     claudeEnabled: isClaude ? enabled : undefined,
-    noticeKey: isClaude && enabled ? "llmSubscriptions.claude.notice" : null,
     errorKey: errorMessageKey(code),
     hintKey: status === "outdated" ? "llmSubscriptions.outdatedHint" : null,
     actions: [],
@@ -76,7 +75,10 @@ export function seatViewModel(seat, state, prefs = {}, platform = "win32") {
       base.actions = ["signin", "test", "redetect"];
       break;
     case "signed-out":
-      base.actions = ["signin", "redetect"];
+      // Claude has no installed-but-auth-unknown state (its auth is the stored
+      // token), so a token-less Claude is "signed-out". It still offers Test,
+      // which reports not-signed-in cleanly, like the other seats' Test.
+      base.actions = isClaude ? ["signin", "test", "redetect"] : ["signin", "redetect"];
       break;
     case "signed-in":
       base.actions = ["test", "signout", "redetect"];
