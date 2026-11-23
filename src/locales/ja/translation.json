@@ -5211,8 +5211,7 @@
     "outdatedHint": "この CLI はアプリでテストしたバージョンより古いです。更新してから再検出を選択してください。",
     "testOk": "テストに成功しました。",
     "claude": {
-      "toggleLabel": "Claude 枠を有効にする",
-      "notice": "Anthropic の規約では、サードパーティアプリでの Claude サブスクリプションの利用が認められない場合があります。有効にする場合は自己責任となります。"
+      "toggleLabel": "Claude 枠を有効にする"
     },
     "install": {
       "title": "{{seat}} をインストール",
