@@ -1,7 +1,7 @@
-# OpenWhispr (fork) - Session Index
+# EdgeAssistant (OpenWhispr fork) - Session Index
 
-Loaded in place of the root `CLAUDE.md`, which `.claude/settings.json` excludes through `claudeMdExcludes`.
-The root `CLAUDE.md` belongs to upstream (`OpenWhispr/openwhispr`). It is about 124 KB and changes in almost every upstream PR, so this fork never edits it, which keeps upstream syncs free of conflicts.
+Loaded in place of the root `CLAUDE.md`, which `.claude/settings.json` excludes through `claudeMdExcludes` (patterns for both `openwhispr*` and `edgeassistant*` checkout names).
+The root `CLAUDE.md` belongs to upstream (`OpenWhispr/openwhispr`). It is about 138 KB and changes in almost every upstream PR, so this fork never edits it, which keeps upstream syncs free of conflicts.
 **It is still the full technical reference.** Before touching a subsystem, grep it for that subsystem's heading and read only that section, e.g. `Select-String -Path CLAUDE.md -Pattern '^### 17\.'`. Headings are listed below. Use the heading text, never line numbers, because upstream moves things around.
 
 ## Response Style
@@ -84,6 +84,11 @@ Decision logic lives in pure, Electron-free policy modules with unit tests (`*Po
 
 ## Fork notes
 
-- Remotes: `origin` = `finedesignz/openwhispr`, `upstream` = `OpenWhispr/openwhispr`. Upstream syncs land on `chore/sync-upstream-*` branches.
-- STT API planning moved to the `openwhispr-stt-api` repo (PR #12). See `.planning/RELOCATED.md`. The `.planning/` files still here are historical.
-- Fork-only files: this index and `.claude/settings.json`. Keep fork changes out of upstream-owned files wherever possible.
+- GitHub repo `finedesignz/edgeassistant` (renamed from `finedesignz/openwhispr`; the old `origin` URL still redirects). `upstream` = `OpenWhispr/openwhispr`. Upstream syncs land on `chore/sync-upstream-*` branches; runbook `docs/UPSTREAM-SYNC.md`.
+- Canonical checkout `C:\Users\artic\GitHub\edgeassistant`; worktrees `..\openwhispr-<slug>`.
+- Brand: users see EdgeAssistant (`BRAND_NAME`). Internal identity is deliberately unchanged: appId `com.titaniumlabs.titaniumwhisper`, URL scheme `titaniumwhisper`, userData `Titanium Whisper`, tray GUID. Changing any of them breaks in-place upgrades.
+- Fork seam: `src/config/fork.config.json`, `forkConfig.js`, `forkRuntime.ts`, `forkKeys.js`, `forkDefaults.ts`, `forkSttLanguage.ts`. OpenWhispr cloud is off while its URLs are empty (`CLOUD_ENABLED`).
+- Titanium sign-in: `src/helpers/titanium/` (`titaniumSession.js`, `titaniumIpc.js`), `src/hooks/useTitaniumAuth.ts`, `TitaniumAccountSection.tsx`. Transcription goes to `openwhispr-stt-api` with the user's license key.
+- Signed Windows build: `FORK-BUILD.md`.
+- `.planning/` is active: milestone v1.0 TIWH (`PROJECT.md`, `ROADMAP.md`, `REQUIREMENTS.md`, `STATE.md`).
+- Keep fork changes out of upstream-owned files wherever possible.
