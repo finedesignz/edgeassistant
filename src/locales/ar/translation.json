@@ -762,7 +762,8 @@
     "connectors": {
       "description": "دع المساعد يستخدم أدواتك. توافق على كل بريد ورسالة ومهمة قبل إرسالها."
     },
-    "readDocs": "اقرأ الوثائق"
+    "readDocs": "اقرأ الوثائق",
+    "notAvailableInBuild": "غير متاح في هذا الإصدار"
   },
   "connectors": {
     "approval": {
@@ -960,9 +961,11 @@
         "token_exchange_failed": "لم يكمل Slack عملية الربط. حاول مرة أخرى.",
         "not_configured": "Slack غير متاح في هذا الإصدار.",
         "connection_changed": "تغيّر حسابك أو اتصال Slack أثناء الربط. حاول مرة أخرى.",
-        "signed_out": "سجّل الدخول إلى {{brand}} لربط Slack.",
+        "signed_out": "سجّل الدخول بحساب Titanium الخاص بك لربط Slack.",
         "policy_blocked": "أوقفت مؤسستك تشغيل الموصلات.",
-        "policy_unavailable": "تعذّر التحقق من إعدادات مؤسستك. حاول مرة أخرى."
+        "policy_unavailable": "تعذّر التحقق من إعدادات مؤسستك. حاول مرة أخرى.",
+        "reauth_required": "سجّل الدخول إلى حساب Titanium مرة أخرى لربط Slack.",
+        "plan_required": "يتطلب ربط Slack ترخيص {{brand}} ساريًا."
       },
       "browser": {
         "connectedTitle": "تم توصيل Slack",
@@ -991,13 +994,15 @@
         "token_exchange_failed": "لم يكمل GitHub عملية الربط. حاول مرة أخرى.",
         "not_configured": "GitHub غير متاح في هذا الإصدار.",
         "connection_changed": "تغيّر حسابك أو اتصال GitHub أثناء الربط. حاول مرة أخرى.",
-        "signed_out": "سجّل الدخول إلى {{brand}} لربط GitHub.",
+        "signed_out": "سجّل الدخول بحساب Titanium الخاص بك لربط GitHub.",
         "policy_blocked": "أوقفت مؤسستك تشغيل الموصلات.",
         "policy_unavailable": "تعذّر التحقق من إعدادات مؤسستك. حاول مرة أخرى.",
         "code_expired": "انتهت صلاحية الرمز. حاول مرة أخرى.",
         "device_flow_disabled": "تسجيل الدخول إلى GitHub برمز غير مُعدّ في هذا الإصدار.",
         "network": "تعذّر الوصول إلى GitHub. تحقّق من اتصالك وحاول مرة أخرى.",
-        "rate_limited": "GitHub مشغول الآن. حاول مرة أخرى بعد دقيقة."
+        "rate_limited": "GitHub مشغول الآن. حاول مرة أخرى بعد دقيقة.",
+        "reauth_required": "سجّل الدخول إلى حساب Titanium مرة أخرى لربط GitHub.",
+        "plan_required": "يتطلب ربط GitHub ترخيص {{brand}} ساريًا."
       },
       "deviceCode": {
         "instructions": "أدخل هذا الرمز على GitHub:",
@@ -1031,12 +1036,14 @@
         "token_exchange_failed": "لم يكمل Google عملية الربط. حاول مرة أخرى.",
         "not_configured": "Gmail غير متاح في هذا الإصدار.",
         "connection_changed": "تغيّر حسابك أو اتصال Gmail أثناء الربط. حاول مرة أخرى.",
-        "signed_out": "سجّل الدخول إلى {{brand}} لربط Gmail.",
+        "signed_out": "سجّل الدخول بحساب Titanium الخاص بك لربط Gmail.",
         "policy_blocked": "أوقفت مؤسستك تشغيل الموصلات.",
         "policy_unavailable": "تعذّر التحقق من إعدادات مؤسستك. حاول مرة أخرى.",
         "permission_not_granted": "لم يتم ربط Gmail لأن إذن إرسال الرسائل الإلكترونية لم يُمنح. أعد الربط واترك هذا الإذن محددًا.",
         "email_not_verified": "لم تتحقق Google من عنوان البريد الإلكتروني لهذا الحساب، لذلك لم يتم ربط Gmail.",
-        "domain_policy": "حظر مسؤول Google في مؤسستك هذا التطبيق. اطلب منه السماح بـ {{brand}}."
+        "domain_policy": "حظر مسؤول Google في مؤسستك هذا التطبيق. اطلب منه السماح بـ {{brand}}.",
+        "reauth_required": "سجّل الدخول إلى حساب Titanium مرة أخرى لربط Gmail.",
+        "plan_required": "يتطلب ربط Gmail ترخيص {{brand}} ساريًا."
       },
       "browser": {
         "connectedTitle": "تم توصيل Gmail",
@@ -1064,10 +1071,12 @@
         "token_exchange_failed": "لم يكمل Linear عملية الربط. حاول مرة أخرى.",
         "not_configured": "Linear غير متاح في هذا الإصدار.",
         "connection_changed": "تغيّر حسابك أو اتصال Linear أثناء الربط. حاول مرة أخرى.",
-        "signed_out": "سجّل الدخول إلى {{brand}} لربط Linear.",
+        "signed_out": "سجّل الدخول بحساب Titanium الخاص بك لربط Linear.",
         "policy_blocked": "أوقفت مؤسستك تشغيل الموصلات.",
         "policy_unavailable": "تعذّر التحقق من إعدادات مؤسستك. حاول مرة أخرى.",
-        "permission_not_granted": "لم يتم ربط Linear لأن بعض الأذونات لم تُمنح. أعد الربط واسمح بها جميعًا."
+        "permission_not_granted": "لم يتم ربط Linear لأن بعض الأذونات لم تُمنح. أعد الربط واسمح بها جميعًا.",
+        "reauth_required": "سجّل الدخول إلى حساب Titanium مرة أخرى لربط Linear.",
+        "plan_required": "يتطلب ربط Linear ترخيص {{brand}} ساريًا."
       },
       "browser": {
         "connectedTitle": "تم توصيل Linear",
@@ -1212,8 +1221,9 @@
       "cardLimit": "يمكن تجهيز {{max}} بطاقات فقط لكل طلب."
     },
     "beta": "تجريبي",
-    "upsell": "الموصلات متاحة في الخطط المدفوعة. قم بالترقية ليعمل المساعد في أدواتك.",
-    "locked": "متاح ضمن الخطط المدفوعة"
+    "upsell": "تتطلب الموصلات ترخيص {{brand}} ساريًا. سجّل الدخول بحساب Titanium الخاص بك ليعمل المساعد في أدواتك.",
+    "locked": "مُضمَّن مع ترخيص {{brand}}",
+    "upsellAction": "فتح حساب Titanium"
   },
   "auth": {
     "cloudNotConfigured": "السحابة غير مهيأة",
@@ -1293,7 +1303,12 @@
     },
     "welcomeSubtitle": "قوة صوتك. بشروطك.",
     "welcomeTitle": "مرحبًا بك في {{brand}}",
-    "sessionExpired": "انتهت الجلسة. يرجى إعادة بدء عملية التسجيل."
+    "sessionExpired": "انتهت الجلسة. يرجى إعادة بدء عملية التسجيل.",
+    "titanium": {
+      "signIn": "تسجيل الدخول عبر Titanium",
+      "subtitle": "سجّل الدخول بحساب Titanium لاستخدام النسخ السحابي في {{brand}}.",
+      "signedInAs": "تم تسجيل الدخول باسم {{email}}"
+    }
   },
   "workspaces": {
     "switcher": {
@@ -2314,6 +2329,7 @@
       "unsupportedProvider": "لا يمكن لتسجيل الملاحظات استخدام {{provider}} للتفريغ المباشر. افتح الإعدادات واختر «محلي» أو مزودًا يدعم البث.",
       "noProviderSelected": "لم يتم اختيار أي مزود لتسجيل الملاحظات. افتح الإعدادات واختر «محلي» أو مزودًا يدعم البث.",
       "signInRequired": "يتطلب تسجيل الملاحظات تسجيل الدخول. يرجى تسجيل الدخول.",
+      "titaniumSignInRequired": "سجّل الدخول إلى {{brand}} لتفريغ الاجتماعات نصيًا.",
       "signInExpired": "انتهت صلاحية تسجيل الدخول، لذا لا يمكن لتسجيل الملاحظات تجديد اتصاله وقد يتوقف. سجّل الدخول مجددًا بعد انتهاء هذا التسجيل.",
       "systemAudioInterrupted": {
         "title": "انقطع صوت الاجتماع",
@@ -2792,6 +2808,12 @@
             "title": "مستضاف ذاتيًا",
             "description": "اربط نموذجك المستضاف ذاتيًا."
           }
+        },
+        "titanium": {
+          "title": "سحابة {{brand}} (Titanium)",
+          "description": "انسخ على خوادم Titanium المستضافة. سجّل الدخول بحساب Titanium، ولا حاجة إلى مفتاح API.",
+          "signIn": "تسجيل الدخول عبر Titanium",
+          "continue": "متابعة"
         }
       },
       "provider": {
@@ -3525,7 +3547,9 @@
         "providersDesc": "استخدم مفتاح API الخاص بك للاتصال بمزود LLM المفضل لديك.",
         "localDesc": "نماذج على الجهاز. خاصة بالكامل.",
         "selfHostedDesc": "خادمك الخاص على شبكتك.",
-        "enterpriseDesc": "استخدم الحساب السحابي لمؤسستك (AWS، Azure، GCP)."
+        "enterpriseDesc": "استخدم الحساب السحابي لمؤسستك (AWS، Azure، GCP).",
+        "subscription": "الاشتراك",
+        "subscriptionDesc": "استخدم اشتراكك المسجَّل الدخول في Claude أو Codex أو Grok أو Antigravity."
       },
       "openwhisprCloud": "{{brand}} Cloud",
       "openwhisprCloudDescription": "دقة موثوقة. لا حاجة للإعداد.",
@@ -3968,7 +3992,9 @@
         "localDesc": "نماذج على الجهاز. خاصة بالكامل.",
         "selfHostedDesc": "خادمك الخاص على شبكتك.",
         "enterprise": "السحابة المؤسسية",
-        "enterpriseDesc": "يُرسَل الصوت إلى السحابة الخاصة بمؤسستك."
+        "enterpriseDesc": "يُرسَل الصوت إلى السحابة الخاصة بمؤسستك.",
+        "titanium": "سحابة {{brand}}",
+        "titaniumDesc": "مشمولة في ترخيصك. لا يلزم أي إعداد."
       },
       "openwhisprCloud": "{{brand}} Cloud",
       "openwhisprCloudDescription": "دقة موثوقة. لا حاجة للإعداد.",
@@ -3997,6 +4023,10 @@
         "switchedEnterprise": {
           "title": "تم اختيار السحابة المؤسسية",
           "description": "يستخدم الإملاء الآن نشر التفريغ الذي تديره مؤسستك."
+        },
+        "switchedTitanium": {
+          "title": "سحابة {{brand}}",
+          "description": "استخدام النسخ السحابي من {{brand}}."
         }
       },
       "gpuDevice": {
@@ -4062,7 +4092,12 @@
         }
       },
       "meetingEnterpriseOnly": "لا تسمح مؤسستك إلا بالتفريغ عبر السحابة المؤسسية، وهو لا يشمل تسجيل الاجتماعات بعد.",
-      "meetingCloudSignedOut": "لا يمكن بدء تسجيل الملاحظات عبر {{brand}} Cloud وأنت غير مسجل الدخول. اختر محركًا آخر أعلاه."
+      "meetingCloudSignedOut": "لا يمكن بدء تسجيل الملاحظات عبر {{brand}} Cloud وأنت غير مسجل الدخول. اختر محركًا آخر أعلاه.",
+      "titaniumEngine": {
+        "connected": "متصل",
+        "expires": "ينتهي الترخيص في {{date}}",
+        "retry": "إعادة المحاولة"
+      }
     },
     "intelligence": {
       "gpuDevice": {
@@ -4372,6 +4407,13 @@
     "tinfoil": {
       "transportNote": "يستخدم Tinfoil نموذج Voxtral Mini 4B للتفريغ المباشر (البث)، ونموذج Voxtral Small 24B للمعالجة الدفعية.",
       "docsLink": "قراءة الوثائق"
+    },
+    "titaniumSignIn": {
+      "message": "سجّل الدخول إلى Titanium لاستخدام النسخ السحابي في {{brand}}.",
+      "action": "تسجيل الدخول عبر Titanium"
+    },
+    "titaniumNoLicense": {
+      "message": "لا يحتوي حسابك على Titanium على ترخيص {{brand}}. تواصل مع {{supportEmail}} للحصول على واحد."
     }
   },
   "cleanupPrompt": "التنظيف",
@@ -4593,6 +4635,10 @@
       "titaniumAccount": {
         "label": "حساب Titanium",
         "description": "تسجيل الدخول والترخيص"
+      },
+      "subscriptions": {
+        "label": "الاشتراكات",
+        "description": "Claude وCodex وGrok وAntigravity"
       }
     },
     "title": "الإعدادات"
@@ -5208,6 +5254,14 @@
     "permissionRestricted": "مقيّد",
     "permissionNotDetermined": "لم يُطلب"
   },
+  "calendarConnect": {
+    "browser": {
+      "connectedTitle": "تم توصيل التقويم",
+      "connectedBody": "يمكنك إغلاق هذا التبويب والعودة إلى {{brand}}.",
+      "failedTitle": "لم يتم توصيل التقويم",
+      "failedBody": "لم يكتمل توصيل التقويم. عد إلى {{brand}} للمحاولة مرة أخرى."
+    }
+  },
   "titaniumAccount": {
     "title": "حساب Titanium",
     "description": "سجّل الدخول بحساب Titanium Labs لاستخدام {{brand}} مع خوادم النسخ الخاصة بنا.",
@@ -5242,6 +5296,96 @@
       "token_not_found": "استُخدم هذا الرابط من قبل أو انتهت صلاحيته. ابدأ تسجيل الدخول مجددًا.",
       "app_mismatch": "كان تسجيل الدخول هذا لتطبيق آخر. ابدأ من هنا مجددًا.",
       "generic": "لم يكتمل تسجيل الدخول. حاول مجددًا."
+    }
+  },
+  "llmSubscriptions": {
+    "title": "الاشتراكات",
+    "description": "استخدم تسجيل دخولك الخاص إلى Claude أو Codex أو Grok أو Antigravity للدردشة ووكيل الإملاء. لا تُستخدم مفاتيح API.",
+    "version": "v{{version}}",
+    "status": {
+      "missing": "غير مثبت",
+      "installing": "جارٍ التثبيت",
+      "installed": "مثبت",
+      "outdated": "التحديث مطلوب",
+      "signing-in": "جارٍ تسجيل الدخول",
+      "signed-in": "تم تسجيل الدخول",
+      "signed-out": "تم تسجيل الخروج",
+      "error": "خطأ"
+    },
+    "seats": {
+      "claude": "واجهة Claude Code CLI باشتراك Claude الخاص بك.",
+      "codex": "واجهة Codex CLI باشتراك ChatGPT الخاص بك.",
+      "grok": "واجهة Grok CLI بحساب X الخاص بك.",
+      "agy": "واجهة Antigravity CLI بحساب Google الخاص بك."
+    },
+    "actions": {
+      "install": "تثبيت",
+      "openGuide": "فتح دليل التثبيت",
+      "signIn": "تسجيل الدخول",
+      "test": "اختبار",
+      "redetect": "إعادة الكشف",
+      "signOut": "تسجيل الخروج",
+      "cancel": "إلغاء",
+      "copy": "نسخ",
+      "openInBrowser": "فتح في المتصفح",
+      "submitCode": "إرسال الرمز"
+    },
+    "outdatedHint": "هذه الواجهة أقدم من الإصدار الذي اختُبر معه التطبيق. حدّثها ثم اختر إعادة الكشف.",
+    "testOk": "نجح الاختبار.",
+    "claude": {
+      "toggleLabel": "تفعيل مقعد Claude",
+      "notice": "قد لا تسمح شروط Anthropic باستخدام اشتراك Claude في تطبيقات الجهات الخارجية. أنت تفعّل هذا على مسؤوليتك."
+    },
+    "install": {
+      "title": "تثبيت {{seat}}",
+      "description": "سيؤدي هذا إلى تنزيل برنامج التثبيت الخاص بالمزوّد وتشغيله. تحقق من العنوان والأمر قبل المتابعة.",
+      "urlLabel": "عنوان برنامج التثبيت",
+      "commandLabel": "الأمر الذي سيُنفّذ",
+      "confirm": "تثبيت",
+      "guided": "ثبّت واجهة Grok CLI من الصفحة الرسمية ثم اختر إعادة الكشف."
+    },
+    "signIn": {
+      "deviceUrlLabel": "افتح هذا العنوان",
+      "deviceCodeLabel": "أدخل هذا الرمز",
+      "waiting": "في انتظار اكتمال تسجيل الدخول.",
+      "claudeInstructions": "افتح العنوان وسجّل الدخول ثم الصق الرمز الظاهر في الصفحة.",
+      "codeLabel": "رمز التفويض",
+      "codePlaceholder": "الصق الرمز",
+      "agyGuide": "شغّل agy مرة واحدة في الطرفية وسجّل الدخول بحساب Google. ثم اختر إعادة الكشف."
+    },
+    "signOut": {
+      "title": "تسجيل الخروج من {{seat}}؟",
+      "terminalCli": "يؤدي هذا أيضًا إلى تسجيل الخروج من واجهة {{seat}} CLI في الطرفية.",
+      "claudeToken": "تتم إزالة الرمز المخزّن من هذا التطبيق. يبقى صالحًا حتى تلغيه من صفحة حساب Claude.",
+      "agyGuide": "سجّل الخروج من Antigravity باستخدام واجهة agy CLI في الطرفية.",
+      "confirm": "تسجيل الخروج"
+    },
+    "errors": {
+      "not-installed": "الواجهة غير مثبتة.",
+      "outdated": "الواجهة قديمة جدًا لهذا التطبيق. حدّثها وأعد الكشف.",
+      "not-signed-in": "لم يتم تسجيل الدخول. سجّل الدخول وحاول مرة أخرى.",
+      "api-key-login-refused": "يستخدم هذا التطبيق تسجيل الدخول بالاشتراك فقط، ولا يستخدم مفاتيح API أبدًا.",
+      "timeout": "استغرقت الواجهة وقتًا طويلًا للرد.",
+      "killed": "تم إيقاف الواجهة.",
+      "quota-or-rate-limit": "تم بلوغ حد الاستخدام. حاول لاحقًا.",
+      "exit-nonzero": "انتهت الواجهة بخطأ.",
+      "parse-failed": "تعذّرت قراءة إجابة الواجهة.",
+      "claude-disabled": "مقعد Claude متوقف.",
+      "busy": "هناك طلب آخر قيد التنفيذ لهذا المقعد.",
+      "invalid-input": "الطلب غير صالح.",
+      "signature-invalid": "تعذّر التحقق من توقيع برنامج التثبيت.",
+      "install-failed": "لم يكتمل التثبيت.",
+      "quarantined-or-missing": "تمت إزالة التثبيت، ربما بواسطة برنامج مكافحة الفيروسات.",
+      "generic": "حدث خطأ ما. حاول مرة أخرى."
+    },
+    "picker": {
+      "group": "واجهات الاشتراك CLI",
+      "helper": "تُجيب واجهات الاشتراك CLI بالنص فقط (دون أدوات EdgeAssistant) وهي أبطأ من مزوّدي API، لذلك لا يعرضها تنظيف الإملاء.",
+      "useApi": "استخدام مزوّد API بدلًا من ذلك",
+      "modelLabel": "النموذج",
+      "defaultModel": "النموذج الافتراضي للواجهة",
+      "empty": "لم يتم تسجيل الدخول إلى أي واجهة اشتراك (CLI) بعد.",
+      "openSubscriptions": "فتح الاشتراكات"
     }
   }
 }

@@ -1,4 +1,20 @@
-import { BRAND_NAME, CLOUD_ENABLED, SITE_URL } from "../config/forkRuntime";
+import {
+  BRAND_NAME,
+  CLOUD_ENABLED,
+  DEFAULT_STT,
+  SITE_URL,
+  TITANIUM,
+  TITANIUM_ENABLED,
+} from "../config/forkRuntime";
+import { isTitaniumServiceUrl } from "../helpers/titanium/titaniumHosts";
+import {
+  resolveTranscriptionEngineTab,
+  settingsOnLeavingTitaniumEngine,
+  titaniumEngineSettings,
+} from "../helpers/titanium/titaniumOnboardingPolicy.js";
+import { transcriptionDestinationUrl } from "../helpers/transcriptionAuth.js";
+import TitaniumEnginePanel from "./TitaniumEnginePanel";
+import { cloudFeatureVisible } from "../config/cloudFeatures";
 import { gateSettingsSection } from "../config/cloudSections";
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
@@ -149,6 +165,7 @@ import {
   isAgentAllowed,
   isCloudBackupAllowed,
   isEnterpriseTranscriptionOfferable,
+  isProviderAllowedByPolicy,
   lockedLocalHistoryValue,
   maxAudioRetentionDays,
 } from "../stores/policyRules";
@@ -164,6 +181,7 @@ import CreateWorkspaceDialog from "./CreateWorkspaceDialog";
 import ProfileSection from "./settings/ProfileSection";
 import ToneStyleSection from "./settings/ToneStyleSection";
 import TitaniumAccountSection from "./settings/TitaniumAccountSection";
+import LlmSubscriptionsSection from "./settings/LlmSubscriptionsSection";
 import { showForkSttLanguageWarning } from "../config/forkSttLanguage";
 import { InfoBox } from "./ui/InfoBox";
 import { formatAmount } from "../utils/formatAmount";
@@ -181,6 +199,7 @@ export type SettingsSectionType =
   | "toneStyle"
   | "speechToText"
   | "llms"
+  | "subscriptions"
   | "privacyData"
   | "system";
 
@@ -601,13 +620,67 @@ function TranscriptionSection({
       enterpriseProviders: TRANSCRIPTION_ENTERPRISE_POLICY_PROVIDER_IDS,
     }
   );
-  const handleTranscriptionModeSelect = (mode: InferenceMode) => {
+  // EdgeAssistant cloud is a derived tab over the Custom route on our own host, not a
+  // persisted mode, and is offered under the same policy gate as self-hosted setup.
+  const titaniumTabOffered =
+    TITANIUM_ENABLED &&
+    isModeAllowed("self-hosted") &&
+    isProviderAllowedByPolicy(policySnapshot, "transcription", "custom");
+  const isTitaniumUrl = isTitaniumServiceUrl(cloudTranscriptionBaseUrl, { DEFAULT_STT, TITANIUM });
+  const activeTranscriptionTab: InferenceMode | "titanium" = resolveTranscriptionEngineTab({
+    mode: effectiveTranscriptionMode,
+    useLocalWhisper,
+    cloudTranscriptionMode,
+    cloudTranscriptionProvider,
+    titaniumEnabled: titaniumTabOffered,
+    destinationUrl: transcriptionDestinationUrl({
+      transcriptionMode,
+      remoteTranscriptionUrl,
+      cloudTranscriptionBaseUrl,
+    }),
+    forkConfig: { DEFAULT_STT, TITANIUM },
+  });
+  const transcriptionTabs: InferenceModeOption<InferenceMode | "titanium">[] = titaniumTabOffered
+    ? transcriptionModes.flatMap((option) =>
+        option.id === "providers"
+          ? [
+              option,
+              {
+                id: "titanium" as const,
+                label: t("settingsPage.transcription.modes.titanium"),
+                description: t("settingsPage.transcription.modes.titaniumDesc"),
+                icon: <Cloud className="w-4 h-4" />,
+              },
+            ]
+          : [option]
+      )
+    : transcriptionModes;
+  const handleTranscriptionModeSelect = (mode: InferenceMode | "titanium") => {
+    if (mode === "titanium") {
+      if (!titaniumTabOffered) return;
+      // Always applied, even when active: it clears any stale self-hosted URL.
+      useSettingsStore
+        .getState()
+        .setCloudTranscriptionForAllScopes(titaniumEngineSettings(DEFAULT_STT));
+      toast({
+        title: t("settingsPage.transcription.toasts.switchedTitanium.title"),
+        description: t("settingsPage.transcription.toasts.switchedTitanium.description"),
+        variant: "success",
+        duration: 3000,
+      });
+      return;
+    }
     if (!isModeAllowed(mode)) return;
     if (mode === "openwhispr" && !isSignedIn) {
       requestSignIn();
       return;
     }
-    if (mode === effectiveTranscriptionMode) return;
+    if (mode === activeTranscriptionTab) return;
+    if (activeTranscriptionTab === "titanium") {
+      useSettingsStore
+        .getState()
+        .updateTranscriptionSettings(settingsOnLeavingTitaniumEngine({ isTitaniumUrl }));
+    }
     setTranscriptionMode(mode);
     setUseLocalWhisper(mode === "local");
     updateTranscriptionSettings({ useLocalWhisper: mode === "local" });
@@ -784,16 +857,18 @@ function TranscriptionSection({
             </div>
           )}
           <InferenceModeSelector
-            modes={transcriptionModes}
-            activeMode={effectiveTranscriptionMode}
+            modes={transcriptionTabs}
+            activeMode={activeTranscriptionTab}
             onSelect={handleTranscriptionModeSelect}
           />
+
+          {activeTranscriptionTab === "titanium" && <TitaniumEnginePanel />}
 
           {effectiveTranscriptionMode === "providers" && renderTranscriptionPicker("cloud")}
           {effectiveTranscriptionMode === "local" && renderTranscriptionPicker("local")}
           {previewAvailable && renderPreviewToggle()}
 
-          {effectiveTranscriptionMode === "self-hosted" && (
+          {activeTranscriptionTab === "self-hosted" && (
             <SelfHostedPanel
               service="transcription"
               url={remoteTranscriptionUrl}
@@ -2968,12 +3043,14 @@ export default function SettingsPage({
                     </DialogContent>
                   </Dialog>
 
-                  <EnterpriseCheckoutDialog
-                    open={enterpriseCheckoutOpen}
-                    onOpenChange={setEnterpriseCheckoutOpen}
-                    workspaces={billingWorkspaces}
-                    onRefreshEntitlement={usage?.refetch}
-                  />
+                  {cloudFeatureVisible("enterpriseCheckout", CLOUD_ENABLED) && (
+                    <EnterpriseCheckoutDialog
+                      open={enterpriseCheckoutOpen}
+                      onOpenChange={setEnterpriseCheckoutOpen}
+                      workspaces={billingWorkspaces}
+                      onRefreshEntitlement={usage?.refetch}
+                    />
+                  )}
                   <CreateWorkspaceDialog
                     open={enterpriseWorkspaceCreateOpen}
                     onOpenChange={setEnterpriseWorkspaceCreateOpen}
@@ -3002,6 +3079,9 @@ export default function SettingsPage({
 
       case "titaniumAccount":
         return <TitaniumAccountSection />;
+
+      case "subscriptions":
+        return <LlmSubscriptionsSection />;
 
       case "toneStyle":
         return (
@@ -4156,7 +4236,7 @@ EOF`,
                 description={t("settingsPage.privacy.description")}
               />
 
-              {isSignedIn && (
+              {cloudFeatureVisible("cloudBackup", CLOUD_ENABLED) && isSignedIn && (
                 <div className="mb-4">
                   <SettingsPanel className="mb-2">
                     <SettingsPanelRow>
@@ -4248,73 +4328,77 @@ EOF`,
               )}
 
               <SettingsPanel>
-                <SettingsPanelRow>
-                  <SettingsRow
-                    label={t("settingsPage.privacy.insightsSync")}
-                    description={
-                      !isSignedIn
-                        ? t("settingsPage.privacy.insightsSyncRequiresAccount")
-                        : !insightsSyncAllowedByPolicy
-                          ? t("common.managedByOrg")
-                          : effectiveDataRetentionEnabled
-                            ? t("settingsPage.privacy.insightsSyncDescription")
-                            : t("settingsPage.privacy.insightsSyncRequiresHistory")
-                    }
-                  >
-                    {/* With history off nothing is counted anywhere: this
+                {cloudFeatureVisible("cloudBackup", CLOUD_ENABLED) && (
+                  <SettingsPanelRow>
+                    <SettingsRow
+                      label={t("settingsPage.privacy.insightsSync")}
+                      description={
+                        !isSignedIn
+                          ? t("settingsPage.privacy.insightsSyncRequiresAccount")
+                          : !insightsSyncAllowedByPolicy
+                            ? t("common.managedByOrg")
+                            : effectiveDataRetentionEnabled
+                              ? t("settingsPage.privacy.insightsSyncDescription")
+                              : t("settingsPage.privacy.insightsSyncRequiresHistory")
+                      }
+                    >
+                      {/* With history off nothing is counted anywhere: this
                         device records no counter, and the cloud writes none
                         either, because analyticsSyncEnabled withholds the
                         localDate its analytics write requires. Turning this on
                         could therefore only promise a sync that never happens —
                         but an already-on toggle must stay switchable off. */}
-                    <Toggle
-                      checked={insightsSyncEnabled}
-                      disabled={
-                        !isSignedIn ||
-                        !canToggleInsightsSync ||
-                        (!effectiveDataRetentionEnabled && !insightsSyncEnabled)
+                      <Toggle
+                        checked={insightsSyncEnabled}
+                        disabled={
+                          !isSignedIn ||
+                          !canToggleInsightsSync ||
+                          (!effectiveDataRetentionEnabled && !insightsSyncEnabled)
+                        }
+                        onChange={(enabled) => {
+                          if (enabled) void enableInsightsSync();
+                          else disableInsightsSync();
+                        }}
+                      />
+                    </SettingsRow>
+                  </SettingsPanelRow>
+                )}
+                {cloudFeatureVisible("leaderboard", CLOUD_ENABLED) && (
+                  <SettingsPanelRow>
+                    <SettingsRow
+                      label={t("insights.leaderboard.title")}
+                      description={
+                        !isSignedIn
+                          ? t("settingsPage.privacy.leaderboardRequiresAccount")
+                          : leaderboardParticipationError === "read"
+                            ? t("insights.leaderboard.activationError")
+                            : leaderboardLeavePending
+                              ? t("insights.leaderboard.leavePending")
+                              : !insightsSyncAllowedByPolicy
+                                ? t("common.managedByOrg")
+                                : !effectiveDataRetentionEnabled
+                                  ? t("settingsPage.privacy.leaderboardRequiresHistory")
+                                  : t("settingsPage.privacy.leaderboardDescription")
                       }
-                      onChange={(enabled) => {
-                        if (enabled) void enableInsightsSync();
-                        else disableInsightsSync();
-                      }}
-                    />
-                  </SettingsRow>
-                </SettingsPanelRow>
-                <SettingsPanelRow>
-                  <SettingsRow
-                    label={t("insights.leaderboard.title")}
-                    description={
-                      !isSignedIn
-                        ? t("settingsPage.privacy.leaderboardRequiresAccount")
-                        : leaderboardParticipationError === "read"
-                          ? t("insights.leaderboard.activationError")
-                          : leaderboardLeavePending
-                            ? t("insights.leaderboard.leavePending")
-                            : !insightsSyncAllowedByPolicy
-                              ? t("common.managedByOrg")
-                              : !effectiveDataRetentionEnabled
-                                ? t("settingsPage.privacy.leaderboardRequiresHistory")
-                                : t("settingsPage.privacy.leaderboardDescription")
-                    }
-                  >
-                    <Toggle
-                      checked={isSignedIn && leaderboardParticipationEnabled}
-                      disabled={
-                        !isSignedIn ||
-                        !leaderboardParticipationReady ||
-                        leaderboardPreferencePending ||
-                        leaderboardParticipationUpdating ||
-                        leaderboardParticipationError === "read" ||
-                        (!leaderboardParticipationEnabled &&
-                          (!effectiveDataRetentionEnabled ||
-                            !insightsSyncAllowedByPolicy ||
-                            (!insightsSyncEnabled && !canToggleInsightsSync)))
-                      }
-                      onChange={(enabled) => void updateLeaderboardParticipation(enabled)}
-                    />
-                  </SettingsRow>
-                </SettingsPanelRow>
+                    >
+                      <Toggle
+                        checked={isSignedIn && leaderboardParticipationEnabled}
+                        disabled={
+                          !isSignedIn ||
+                          !leaderboardParticipationReady ||
+                          leaderboardPreferencePending ||
+                          leaderboardParticipationUpdating ||
+                          leaderboardParticipationError === "read" ||
+                          (!leaderboardParticipationEnabled &&
+                            (!effectiveDataRetentionEnabled ||
+                              !insightsSyncAllowedByPolicy ||
+                              (!insightsSyncEnabled && !canToggleInsightsSync)))
+                        }
+                        onChange={(enabled) => void updateLeaderboardParticipation(enabled)}
+                      />
+                    </SettingsRow>
+                  </SettingsPanelRow>
+                )}
                 <SettingsPanelRow>
                   <SettingsRow
                     label={t("settingsPage.privacy.usageAnalytics")}

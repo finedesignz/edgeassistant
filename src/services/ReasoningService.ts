@@ -24,9 +24,14 @@ import { streamText, stepCountIs } from "ai";
 import { compactTranscriptHistory } from "./ai/transcriptHistory";
 import { getAIModel } from "./ai/providers";
 import { createEnterpriseChatModel } from "./ai/enterpriseChatModel";
+import { createCliChatModel } from "./ai/cliChatModel";
+import { cliSeatForProviderId, isCliProviderId } from "../helpers/llmCli/llmCliRouting.js";
 import { getManagedScopeResolution } from "../stores/enterpriseIdentityStore";
 import type { InferenceScope } from "../config/inferenceScopes";
 import { PROVIDER_REGISTRY, type ProviderContext } from "./ai/inferenceProviders";
+import { cleanupKeySource, type CleanupKeySource } from "./cleanupAuth";
+import { isTitaniumServiceUrl } from "../helpers/titanium/titaniumHosts";
+import { DEFAULT_STT, TITANIUM } from "../config/forkRuntime";
 import {
   canBorrowCleanupCustomKey,
   resolveConfiguredOpenAIBase,
@@ -190,6 +195,14 @@ class ReasoningService extends BaseReasoningService {
     };
   }
 
+  private cleanupKeySourceFor(storedKey: string, baseUrl: string | undefined): CleanupKeySource {
+    return cleanupKeySource({
+      storedKey,
+      baseUrl,
+      isTitaniumService: isTitaniumServiceUrl(baseUrl, { DEFAULT_STT, TITANIUM }),
+    });
+  }
+
   private async getApiKey(
     provider:
       "openai" | "anthropic" | "gemini" | "groq" | "tinfoil" | "custom" | "openrouter" | "corti"
@@ -211,6 +224,19 @@ class ReasoningService extends BaseReasoningService {
         hasKey: !!trimmedKey,
         keyLength: trimmedKey.length,
       });
+
+      // With no key of their own, a signed-in user reaches our server (and only
+      // our server) with their Titanium license. Never cached: signing in or out
+      // takes effect on the next request.
+      const { cleanupCloudBaseUrl } = getSettings();
+      if (this.cleanupKeySourceFor(trimmedKey, cleanupCloudBaseUrl) === "titanium") {
+        try {
+          return (await window.electronAPI?.getTitaniumServiceKey?.(cleanupCloudBaseUrl)) || "";
+        } catch (err) {
+          logger.logReasoning("TITANIUM_KEY_IPC_ERROR", { error: (err as Error)?.message });
+          return "";
+        }
+      }
 
       return trimmedKey;
     }
@@ -848,6 +874,7 @@ class ReasoningService extends BaseReasoningService {
       lanUrl: config.lanUrl,
       customApiKey: config.customApiKey,
       isEnterpriseProvider: isEnterpriseProvider(provider),
+      isCliProvider: isCliProviderId(provider),
     });
     const mode: InferenceMode =
       route.kind === "self-hosted"
@@ -863,6 +890,7 @@ class ReasoningService extends BaseReasoningService {
     const abortController = new AbortController();
     this.streamAbortController = abortController;
     const isEnterprise = route.kind === "enterprise";
+    const isCli = route.kind === "cli";
     const isLocalProvider = route.kind === "local";
     const isLanChat = route.kind === "self-hosted";
 
@@ -898,9 +926,9 @@ class ReasoningService extends BaseReasoningService {
     let apiKey = "";
     let baseURL: string | undefined;
 
-    if (isEnterprise) {
-      // Enterprise SDKs run in the main process; the model below proxies
-      // doStream over IPC, so no key or base URL is resolved here.
+    if (isEnterprise || isCli) {
+      // Enterprise SDKs and subscription CLIs run in the main process; the model
+      // below proxies doStream over IPC, so no key or base URL is resolved here.
     } else if (isLanChat) {
       apiKey = route.apiKey;
       baseURL = resolveSelfHostedOpenAIBase(route.baseUrl);
@@ -920,12 +948,14 @@ class ReasoningService extends BaseReasoningService {
     // No Tinfoil model offers a level, so this needn't wait for the registry refresh below.
     const reasoningEffort = chosenReasoningEffort(aiProvider, model, config, baseURL);
     // Resolving a Tinfoil model refreshes the registry, so read model config after it.
-    const aiModel = isEnterprise
-      ? createEnterpriseChatModel(provider as EnterpriseProvider, model, config.inferenceScope)
-      : await getAIModel(aiProvider, model, apiKey, baseURL, {
-          disableThinking: openrouterDisableThinking,
-          reasoningEffort: provider === "openrouter" ? reasoningEffort : undefined,
-        });
+    const aiModel = isCli
+      ? createCliChatModel(cliSeatForProviderId(provider)!, model)
+      : isEnterprise
+        ? createEnterpriseChatModel(provider as EnterpriseProvider, model, config.inferenceScope)
+        : await getAIModel(aiProvider, model, apiKey, baseURL, {
+            disableThinking: openrouterDisableThinking,
+            reasoningEffort: provider === "openrouter" ? reasoningEffort : undefined,
+          });
 
     if (abortController.signal.aborted) {
       yield { type: "done", finishReason: "stop" };
@@ -988,8 +1018,9 @@ class ReasoningService extends BaseReasoningService {
         role: m.role as "system" | "user" | "assistant",
         content: m.content,
       })) as import("ai").ModelMessage[],
-      tools: tools || undefined,
-      stopWhen: stepCountIs(tools ? ReasoningService.MAX_TOOL_STEPS : 1),
+      // A CLI seat runs with its own tools off and answers text only.
+      tools: isCli ? undefined : tools || undefined,
+      stopWhen: stepCountIs(tools && !isCli ? ReasoningService.MAX_TOOL_STEPS : 1),
       prepareStep: ({ messages }) => ({ messages: compactTranscriptHistory(messages) }),
       abortSignal: abortController.signal,
       ...(useTemperature ? { temperature: config.temperature ?? 0.3 } : {}),
@@ -1372,6 +1403,8 @@ class ReasoningService extends BaseReasoningService {
   async isAvailable(): Promise<boolean> {
     try {
       const settings = getSettings();
+      // Dictation cleanup never runs on a subscription CLI (D-03: 10 to 26 s warm).
+      if (isCliProviderId(settings.cleanupProvider)) return false;
       // Mirrors processText's precedence: managed access outranks every manual route.
       if (
         getManagedScopeResolution("dictationCleanup", settings.enterpriseSetupMode).kind ===
@@ -1392,6 +1425,18 @@ class ReasoningService extends BaseReasoningService {
       }
 
       if (settings.cleanupProvider === "custom" && settings.cleanupCloudBaseUrl?.trim()) {
+        // Our own server with no stored key and no license: skip cleanup instead
+        // of sending a request that can only fail.
+        if (
+          isTitaniumServiceUrl(settings.cleanupCloudBaseUrl, { DEFAULT_STT, TITANIUM }) &&
+          !(await this.getApiKey("custom"))
+        ) {
+          logger.logReasoning("API_KEY_CHECK", {
+            customProvider: true,
+            signedOutOnOurServer: true,
+          });
+          return false;
+        }
         logger.logReasoning("API_KEY_CHECK", {
           customProvider: true,
           hasCustomEndpoint: true,

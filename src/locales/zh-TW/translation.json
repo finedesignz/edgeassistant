@@ -391,6 +391,12 @@
             "title": "自架主機",
             "description": "連接你自己託管的模型。"
           }
+        },
+        "titanium": {
+          "title": "{{brand}} 雲端（Titanium）",
+          "description": "在 Titanium 代管的伺服器上轉錄。使用 Titanium 帳號登入即可，無需 API 金鑰。",
+          "signIn": "使用 Titanium 登入",
+          "continue": "繼續"
         }
       },
       "provider": {
@@ -920,6 +926,13 @@
     "tinfoil": {
       "transportNote": "Tinfoil 串流轉錄使用 Voxtral Mini 4B，批次轉錄使用 Voxtral Small 24B。",
       "docsLink": "查看文件"
+    },
+    "titaniumSignIn": {
+      "message": "請登入 Titanium 以使用 {{brand}} 雲端轉錄。",
+      "action": "使用 Titanium 登入"
+    },
+    "titaniumNoLicense": {
+      "message": "你的 Titanium 帳戶沒有 {{brand}} 授權。請聯絡 {{supportEmail}} 取得。"
     }
   },
   "hooks": {
@@ -1230,7 +1243,12 @@
     },
     "welcomeSubtitle": "你的聲音，由你掌控。",
     "welcomeTitle": "歡迎使用 {{brand}}",
-    "sessionExpired": "工作階段已過期，請重新登入。"
+    "sessionExpired": "工作階段已過期，請重新登入。",
+    "titanium": {
+      "signIn": "使用 Titanium 登入",
+      "subtitle": "使用 Titanium 帳號登入，即可使用 {{brand}} 雲端轉錄。",
+      "signedInAs": "已登入：{{email}}"
+    }
   },
   "cleanupPrompt": "文字整理",
   "developerSection": {
@@ -1581,6 +1599,10 @@
       "titaniumAccount": {
         "label": "Titanium 帳戶",
         "description": "登入與授權"
+      },
+      "subscriptions": {
+        "label": "訂閱",
+        "description": "Claude、Codex、Grok、Antigravity"
       }
     },
     "title": "設定"
@@ -1877,7 +1899,9 @@
         "localDesc": "裝置端模型，完全私密。",
         "selfHostedDesc": "你的伺服器，在你的網路上。",
         "enterprise": "企業級",
-        "enterpriseDesc": "使用你組織的雲端帳號（AWS、Azure、GCP）。"
+        "enterpriseDesc": "使用你組織的雲端帳號（AWS、Azure、GCP）。",
+        "subscription": "訂閱",
+        "subscriptionDesc": "使用已登入的 Claude、Codex、Grok 或 Antigravity 訂閱。"
       },
       "openwhisprCloud": "{{brand}} Cloud",
       "openwhisprCloudDescription": "準確可靠，無需設定。",
@@ -2298,7 +2322,9 @@
         "localDesc": "裝置端模型，完全私密。",
         "selfHostedDesc": "你的伺服器，在你的網路上。",
         "enterprise": "企業雲端",
-        "enterpriseDesc": "音訊會傳送到貴組織自己的雲端。"
+        "enterpriseDesc": "音訊會傳送到貴組織自己的雲端。",
+        "titanium": "{{brand}} 雲端",
+        "titaniumDesc": "已包含在您的授權中，無需設定。"
       },
       "openwhisprCloud": "{{brand}} Cloud",
       "openwhisprCloudDescription": "準確可靠，無需設定。",
@@ -2327,6 +2353,10 @@
         "switchedEnterprise": {
           "title": "已選擇企業雲端",
           "description": "聽寫現在使用貴組織管理的轉錄部署。"
+        },
+        "switchedTitanium": {
+          "title": "{{brand}} 雲端",
+          "description": "正在使用 {{brand}} 雲端轉錄。"
         }
       },
       "gpuDevice": {
@@ -2392,7 +2422,12 @@
         }
       },
       "meetingEnterpriseOnly": "貴組織僅允許企業雲端轉錄，尚不支援會議錄音。",
-      "meetingCloudSignedOut": "未登入時，無法使用 {{brand}} Cloud 開始筆記錄音。請在上方選擇其他引擎。"
+      "meetingCloudSignedOut": "未登入時，無法使用 {{brand}} Cloud 開始筆記錄音。請在上方選擇其他引擎。",
+      "titaniumEngine": {
+        "connected": "已連線",
+        "expires": "授權將於 {{date}} 到期",
+        "retry": "重試"
+      }
     },
     "intelligence": {
       "gpuDevice": {
@@ -3220,6 +3255,7 @@
       "unsupportedProvider": "筆記錄音無法使用 {{provider}} 進行即時轉錄。請開啟設定，選擇本機或支援串流的服務商。",
       "noProviderSelected": "尚未為筆記錄音選擇服務商。請開啟設定，選擇本機或支援串流的服務商。",
       "signInRequired": "筆記錄音需要登入，請先登入。",
+      "titaniumSignInRequired": "請登入 {{brand}} 以轉錄會議。",
       "signInExpired": "登入已過期，筆記錄音無法更新連線，可能會中斷。請在本次錄音結束後重新登入。",
       "systemAudioSilent": {
         "title": "尚未偵測到會議音訊",
@@ -4075,7 +4111,8 @@
     "connectors": {
       "description": "讓助理使用您的工具。每封郵件、每則訊息和每個議題送出前都需要您核准。"
     },
-    "readDocs": "閱讀文件"
+    "readDocs": "閱讀文件",
+    "notAvailableInBuild": "此版本無法使用"
   },
   "connectors": {
     "approval": {
@@ -4273,9 +4310,11 @@
         "token_exchange_failed": "Slack 未完成連接，請重試。",
         "not_configured": "此版本中 Slack 不可用。",
         "connection_changed": "連接過程中您的帳戶或 Slack 連接發生了變化，請重試。",
-        "signed_out": "請登入 {{brand}} 以連接 Slack。",
+        "signed_out": "請使用您的 Titanium 帳戶登入以連接 Slack。",
         "policy_blocked": "您的組織已關閉連接器。",
-        "policy_unavailable": "無法檢查您的組織設定，請重試。"
+        "policy_unavailable": "無法檢查您的組織設定，請重試。",
+        "reauth_required": "請重新登入您的 Titanium 帳戶以連接 Slack。",
+        "plan_required": "連接 Slack 需要有效的 {{brand}} 授權。"
       },
       "browser": {
         "connectedTitle": "Slack 已連接",
@@ -4304,13 +4343,15 @@
         "token_exchange_failed": "GitHub 未完成連接，請重試。",
         "not_configured": "此版本中 GitHub 不可用。",
         "connection_changed": "連接過程中您的帳戶或 GitHub 連接發生了變化，請重試。",
-        "signed_out": "請登入 {{brand}} 以連接 GitHub。",
+        "signed_out": "請使用您的 Titanium 帳戶登入以連接 GitHub。",
         "policy_blocked": "您的組織已關閉連接器。",
         "policy_unavailable": "無法檢查您的組織設定，請重試。",
         "code_expired": "代碼已過期，請重試。",
         "device_flow_disabled": "此版本未設定使用代碼登入 GitHub。",
         "network": "無法連線到 GitHub。請檢查網路連線後重試。",
-        "rate_limited": "GitHub 目前忙碌中，請一分鐘後重試。"
+        "rate_limited": "GitHub 目前忙碌中，請一分鐘後重試。",
+        "reauth_required": "請重新登入您的 Titanium 帳戶以連接 GitHub。",
+        "plan_required": "連接 GitHub 需要有效的 {{brand}} 授權。"
       },
       "deviceCode": {
         "instructions": "請在 GitHub 上輸入此代碼：",
@@ -4344,12 +4385,14 @@
         "token_exchange_failed": "Google 未完成連接，請重試。",
         "not_configured": "此版本中 Gmail 不可用。",
         "connection_changed": "連接過程中您的帳戶或 Gmail 連接發生了變化，請重試。",
-        "signed_out": "請登入 {{brand}} 以連接 Gmail。",
+        "signed_out": "請使用您的 Titanium 帳戶登入以連接 Gmail。",
         "policy_blocked": "您的組織已關閉連接器。",
         "policy_unavailable": "無法檢查您的組織設定，請重試。",
         "permission_not_granted": "由於未授予傳送郵件的權限，Gmail 未連接。請重新連接並保持勾選該權限。",
         "email_not_verified": "Google 尚未驗證此帳戶的電子郵件地址，因此 Gmail 未連接。",
-        "domain_policy": "您機構的 Google 管理員已封鎖此應用程式。請他們允許 {{brand}}。"
+        "domain_policy": "您機構的 Google 管理員已封鎖此應用程式。請他們允許 {{brand}}。",
+        "reauth_required": "請重新登入您的 Titanium 帳戶以連接 Gmail。",
+        "plan_required": "連接 Gmail 需要有效的 {{brand}} 授權。"
       },
       "browser": {
         "connectedTitle": "Gmail 已連接",
@@ -4377,10 +4420,12 @@
         "token_exchange_failed": "Linear 未完成連接，請重試。",
         "not_configured": "此版本中 Linear 不可用。",
         "connection_changed": "連接過程中您的帳戶或 Linear 連接發生了變化，請重試。",
-        "signed_out": "請登入 {{brand}} 以連接 Linear。",
+        "signed_out": "請使用您的 Titanium 帳戶登入以連接 Linear。",
         "policy_blocked": "您的組織已關閉連接器。",
         "policy_unavailable": "無法檢查您的組織設定，請重試。",
-        "permission_not_granted": "由於未授予全部權限，Linear 未連接。請重新連接並允許所有權限。"
+        "permission_not_granted": "由於未授予全部權限，Linear 未連接。請重新連接並允許所有權限。",
+        "reauth_required": "請重新登入您的 Titanium 帳戶以連接 Linear。",
+        "plan_required": "連接 Linear 需要有效的 {{brand}} 授權。"
       },
       "browser": {
         "connectedTitle": "Linear 已連接",
@@ -4525,8 +4570,9 @@
       "cardLimit": "每次請求最多只能準備 {{max}} 張卡片。"
     },
     "beta": "測試版",
-    "upsell": "連接器包含在付費方案中。升級後，助理即可在您的工具中執行操作。",
-    "locked": "付費方案包含此功能"
+    "upsell": "連接器需要有效的 {{brand}} 授權。請使用您的 Titanium 帳戶登入，助手即可在您的工具中執行操作。",
+    "locked": "{{brand}} 授權包含此功能",
+    "upsellAction": "開啟 Titanium 帳戶"
   },
   "calendar": {
     "title": "Google 日曆",
@@ -5086,6 +5132,14 @@
     "permissionRestricted": "受限",
     "permissionNotDetermined": "尚未請求"
   },
+  "calendarConnect": {
+    "browser": {
+      "connectedTitle": "日曆已連接",
+      "connectedBody": "您可以關閉此分頁並返回 {{brand}}。",
+      "failedTitle": "日曆未連接",
+      "failedBody": "日曆連接未完成。請返回 {{brand}} 重試。"
+    }
+  },
   "titaniumAccount": {
     "title": "Titanium 帳戶",
     "description": "使用 Titanium Labs 帳戶登入，即可透過我們的轉錄伺服器使用 {{brand}}。",
@@ -5120,6 +5174,96 @@
       "token_not_found": "此連結已使用或已過期。請重新開始登入。",
       "app_mismatch": "此登入屬於其他應用程式。請從這裡重新開始。",
       "generic": "登入未完成。請再試一次。"
+    }
+  },
+  "llmSubscriptions": {
+    "title": "訂閱",
+    "description": "使用您自己的 Claude、Codex、Grok 或 Antigravity 登入來進行聊天和聽寫代理。不使用 API 金鑰。",
+    "version": "v{{version}}",
+    "status": {
+      "missing": "未安裝",
+      "installing": "正在安裝",
+      "installed": "已安裝",
+      "outdated": "需要更新",
+      "signing-in": "正在登入",
+      "signed-in": "已登入",
+      "signed-out": "已登出",
+      "error": "錯誤"
+    },
+    "seats": {
+      "claude": "使用您的 Claude 訂閱的 Claude Code CLI。",
+      "codex": "使用您的 ChatGPT 訂閱的 Codex CLI。",
+      "grok": "使用您的 X 帳號的 Grok CLI。",
+      "agy": "使用您的 Google 帳號的 Antigravity CLI。"
+    },
+    "actions": {
+      "install": "安裝",
+      "openGuide": "開啟安裝指南",
+      "signIn": "登入",
+      "test": "測試",
+      "redetect": "重新偵測",
+      "signOut": "登出",
+      "cancel": "取消",
+      "copy": "複製",
+      "openInBrowser": "在瀏覽器中開啟",
+      "submitCode": "提交代碼"
+    },
+    "outdatedHint": "此 CLI 版本低於應用程式測試所用的版本。請更新後選擇重新偵測。",
+    "testOk": "測試通過。",
+    "claude": {
+      "toggleLabel": "啟用 Claude 席位",
+      "notice": "Anthropic 的條款可能不允許在第三方應用程式中使用 Claude 訂閱。啟用即表示風險自負。"
+    },
+    "install": {
+      "title": "安裝 {{seat}}",
+      "description": "這會下載並執行供應商的安裝程式。繼續之前請檢查位址和指令。",
+      "urlLabel": "安裝程式位址",
+      "commandLabel": "將執行的指令",
+      "confirm": "安裝",
+      "guided": "請從官方頁面安裝 Grok CLI，然後選擇重新偵測。"
+    },
+    "signIn": {
+      "deviceUrlLabel": "開啟此位址",
+      "deviceCodeLabel": "輸入此代碼",
+      "waiting": "正在等待登入完成。",
+      "claudeInstructions": "開啟該位址並登入，然後貼上頁面上顯示的代碼。",
+      "codeLabel": "授權碼",
+      "codePlaceholder": "貼上代碼",
+      "agyGuide": "在終端機中執行一次 agy 並使用 Google 帳號登入，然後選擇重新偵測。"
+    },
+    "signOut": {
+      "title": "登出 {{seat}}？",
+      "terminalCli": "這也會登出終端機中的 {{seat}} CLI。",
+      "claudeToken": "已儲存的權杖將從此應用程式中刪除。在您於 Claude 帳號頁面撤銷之前，它仍然有效。",
+      "agyGuide": "請在終端機中使用 agy CLI 登出 Antigravity。",
+      "confirm": "登出"
+    },
+    "errors": {
+      "not-installed": "CLI 未安裝。",
+      "outdated": "CLI 版本過舊，不適用於此應用程式。請更新後重新偵測。",
+      "not-signed-in": "未登入。請登入後重試。",
+      "api-key-login-refused": "此應用程式只使用訂閱登入，絕不使用 API 金鑰。",
+      "timeout": "CLI 回應時間過長。",
+      "killed": "CLI 已停止。",
+      "quota-or-rate-limit": "已達到使用或速率限制。請稍後重試。",
+      "exit-nonzero": "CLI 因錯誤結束。",
+      "parse-failed": "無法讀取 CLI 的回答。",
+      "claude-disabled": "Claude 席位已關閉。",
+      "busy": "此席位已有另一個請求正在執行。",
+      "invalid-input": "請求無效。",
+      "signature-invalid": "無法驗證安裝程式的簽章。",
+      "install-failed": "安裝未完成。",
+      "quarantined-or-missing": "安裝已被移除，可能是被防毒軟體刪除。",
+      "generic": "發生錯誤。請重試。"
+    },
+    "picker": {
+      "group": "訂閱 CLI",
+      "helper": "訂閱 CLI 只回傳文字（沒有 EdgeAssistant 工具），而且比 API 供應商慢，因此聽寫清理不提供它們。",
+      "useApi": "改用 API 供應商",
+      "modelLabel": "模型",
+      "defaultModel": "CLI 預設模型",
+      "empty": "尚未登入任何訂閱 CLI。",
+      "openSubscriptions": "開啟訂閱"
     }
   }
 }

@@ -391,6 +391,12 @@
             "title": "Autoalojado",
             "description": "Conecta tu propio modelo alojado."
           }
+        },
+        "titanium": {
+          "title": "Nube de {{brand}} (Titanium)",
+          "description": "Transcribe en los servidores alojados de Titanium. Inicia sesión con tu cuenta de Titanium; no necesitas clave de API.",
+          "signIn": "Iniciar sesión con Titanium",
+          "continue": "Continuar"
         }
       },
       "provider": {
@@ -920,6 +926,13 @@
     "tinfoil": {
       "transportNote": "Tinfoil transmite con Voxtral Mini 4B y procesa por lotes con Voxtral Small 24B.",
       "docsLink": "Ver la documentación"
+    },
+    "titaniumSignIn": {
+      "message": "Inicia sesión en Titanium para usar la transcripción en la nube de {{brand}}.",
+      "action": "Iniciar sesión con Titanium"
+    },
+    "titaniumNoLicense": {
+      "message": "Tu cuenta de Titanium no tiene una licencia de {{brand}}. Contacta con {{supportEmail}} para obtener una."
     }
   },
   "hooks": {
@@ -1230,7 +1243,12 @@
     },
     "welcomeSubtitle": "El poder de tu voz. En tus términos.",
     "welcomeTitle": "Bienvenido a {{brand}}",
-    "sessionExpired": "Sesión expirada"
+    "sessionExpired": "Sesión expirada",
+    "titanium": {
+      "signIn": "Iniciar sesión con Titanium",
+      "subtitle": "Inicia sesión con tu cuenta de Titanium para usar la transcripción en la nube de {{brand}}.",
+      "signedInAs": "Sesión iniciada como {{email}}"
+    }
   },
   "cleanupPrompt": "Corrección",
   "developerSection": {
@@ -1633,6 +1651,10 @@
       "titaniumAccount": {
         "label": "Cuenta Titanium",
         "description": "Inicio de sesión y licencia"
+      },
+      "subscriptions": {
+        "label": "Suscripciones",
+        "description": "Claude, Codex, Grok, Antigravity"
       }
     },
     "title": "Ajustes"
@@ -1929,7 +1951,9 @@
         "localDesc": "Modelos en el dispositivo. Privado.",
         "selfHostedDesc": "Tu servidor en tu red.",
         "enterprise": "Empresarial",
-        "enterpriseDesc": "Usa la cuenta en la nube de tu organización (AWS, Azure, GCP)."
+        "enterpriseDesc": "Usa la cuenta en la nube de tu organización (AWS, Azure, GCP).",
+        "subscription": "Suscripción",
+        "subscriptionDesc": "Usa tu suscripción de Claude, Codex, Grok o Antigravity con sesión iniciada."
       },
       "openwhisprCloud": "{{brand}} Cloud",
       "openwhisprCloudDescription": "Resultados fiables. Sin configuración.",
@@ -2350,7 +2374,9 @@
         "localDesc": "Modelos en el dispositivo. Privado.",
         "selfHostedDesc": "Tu servidor en tu red.",
         "enterprise": "Nube empresarial",
-        "enterpriseDesc": "El audio se envía a la nube propia de tu organización."
+        "enterpriseDesc": "El audio se envía a la nube propia de tu organización.",
+        "titanium": "{{brand}} cloud",
+        "titaniumDesc": "Incluido con tu licencia. No requiere configuración."
       },
       "openwhisprCloud": "{{brand}} Cloud",
       "openwhisprCloudDescription": "Resultados fiables. Sin configuración.",
@@ -2379,6 +2405,10 @@
         "switchedEnterprise": {
           "title": "Nube empresarial seleccionada",
           "description": "El dictado ahora usa la transcripción gestionada por tu organización."
+        },
+        "switchedTitanium": {
+          "title": "{{brand}} cloud",
+          "description": "Usando la transcripción en la nube de {{brand}}."
         }
       },
       "gpuDevice": {
@@ -2444,7 +2474,12 @@
         }
       },
       "meetingEnterpriseOnly": "Tu organización solo permite la transcripción en nube empresarial, que aún no cubre la grabación de reuniones.",
-      "meetingCloudSignedOut": "Las grabaciones de notas no pueden iniciarse con {{brand}} Cloud sin haber iniciado sesión. Elige otro motor arriba."
+      "meetingCloudSignedOut": "Las grabaciones de notas no pueden iniciarse con {{brand}} Cloud sin haber iniciado sesión. Elige otro motor arriba.",
+      "titaniumEngine": {
+        "connected": "Conectado",
+        "expires": "La licencia caduca el {{date}}",
+        "retry": "Reintentar"
+      }
     },
     "intelligence": {
       "gpuDevice": {
@@ -3272,6 +3307,7 @@
       "unsupportedProvider": "La grabación de notas no puede usar {{provider}} para transcripción en vivo. Abre Ajustes y elige Local o un proveedor de streaming.",
       "noProviderSelected": "No hay ningún proveedor seleccionado para la grabación de notas. Abre Ajustes y elige Local o un proveedor de streaming.",
       "signInRequired": "La grabación de notas requiere iniciar sesión. Por favor, inicia sesión.",
+      "titaniumSignInRequired": "Inicia sesión en {{brand}} para transcribir reuniones.",
       "signInExpired": "Tu sesión ha caducado, así que la grabación de notas no puede renovar su conexión y podría detenerse. Vuelve a iniciar sesión cuando termine esta grabación.",
       "systemAudioSilent": {
         "title": "Aún no se detecta el audio de la reunión",
@@ -4127,7 +4163,8 @@
     "connectors": {
       "description": "Deja que el asistente use tus herramientas. Apruebas cada correo, mensaje e incidencia antes de que se envíe."
     },
-    "readDocs": "Leer la documentación"
+    "readDocs": "Leer la documentación",
+    "notAvailableInBuild": "No disponible en esta versión"
   },
   "connectors": {
     "approval": {
@@ -4325,9 +4362,11 @@
         "token_exchange_failed": "Slack no terminó de conectarse. Inténtalo de nuevo.",
         "not_configured": "Slack no está disponible en esta versión.",
         "connection_changed": "Tu cuenta o la conexión de Slack cambiaron durante la conexión. Inténtalo de nuevo.",
-        "signed_out": "Inicia sesión en {{brand}} para conectar Slack.",
+        "signed_out": "Inicia sesión con tu cuenta de Titanium para conectar Slack.",
         "policy_blocked": "Tu organización ha desactivado los conectores.",
-        "policy_unavailable": "No se pudieron comprobar los ajustes de tu organización. Inténtalo de nuevo."
+        "policy_unavailable": "No se pudieron comprobar los ajustes de tu organización. Inténtalo de nuevo.",
+        "reauth_required": "Vuelve a iniciar sesión en tu cuenta de Titanium para conectar Slack.",
+        "plan_required": "Conectar Slack requiere una licencia activa de {{brand}}."
       },
       "browser": {
         "connectedTitle": "Slack está conectado",
@@ -4356,13 +4395,15 @@
         "token_exchange_failed": "GitHub no terminó de conectarse. Inténtalo de nuevo.",
         "not_configured": "GitHub no está disponible en esta versión.",
         "connection_changed": "Tu cuenta o la conexión de GitHub cambiaron durante la conexión. Inténtalo de nuevo.",
-        "signed_out": "Inicia sesión en {{brand}} para conectar GitHub.",
+        "signed_out": "Inicia sesión con tu cuenta de Titanium para conectar GitHub.",
         "policy_blocked": "Tu organización ha desactivado los conectores.",
         "policy_unavailable": "No se pudieron comprobar los ajustes de tu organización. Inténtalo de nuevo.",
         "code_expired": "El código caducó. Inténtalo de nuevo.",
         "device_flow_disabled": "El inicio de sesión en GitHub con un código no está configurado en esta versión.",
         "network": "No se pudo conectar con GitHub. Comprueba tu conexión e inténtalo de nuevo.",
-        "rate_limited": "GitHub está ocupado en este momento. Inténtalo de nuevo en un minuto."
+        "rate_limited": "GitHub está ocupado en este momento. Inténtalo de nuevo en un minuto.",
+        "reauth_required": "Vuelve a iniciar sesión en tu cuenta de Titanium para conectar GitHub.",
+        "plan_required": "Conectar GitHub requiere una licencia activa de {{brand}}."
       },
       "deviceCode": {
         "instructions": "Introduce este código en GitHub:",
@@ -4396,12 +4437,14 @@
         "token_exchange_failed": "Google no terminó de conectarse. Inténtalo de nuevo.",
         "not_configured": "Gmail no está disponible en esta versión.",
         "connection_changed": "Tu cuenta o la conexión de Gmail cambiaron durante la conexión. Inténtalo de nuevo.",
-        "signed_out": "Inicia sesión en {{brand}} para conectar Gmail.",
+        "signed_out": "Inicia sesión con tu cuenta de Titanium para conectar Gmail.",
         "policy_blocked": "Tu organización ha desactivado los conectores.",
         "policy_unavailable": "No se pudieron comprobar los ajustes de tu organización. Inténtalo de nuevo.",
         "permission_not_granted": "Gmail no se conectó porque no se concedió el permiso para enviar correos. Vuelve a conectar y deja ese permiso marcado.",
         "email_not_verified": "Google no ha verificado la dirección de correo de esta cuenta, así que Gmail no se conectó.",
-        "domain_policy": "El administrador de Google de tu organización bloqueó esta app. Pídele que permita {{brand}}."
+        "domain_policy": "El administrador de Google de tu organización bloqueó esta app. Pídele que permita {{brand}}.",
+        "reauth_required": "Vuelve a iniciar sesión en tu cuenta de Titanium para conectar Gmail.",
+        "plan_required": "Conectar Gmail requiere una licencia activa de {{brand}}."
       },
       "browser": {
         "connectedTitle": "Gmail está conectado",
@@ -4429,10 +4472,12 @@
         "token_exchange_failed": "Linear no terminó de conectarse. Inténtalo de nuevo.",
         "not_configured": "Linear no está disponible en esta versión.",
         "connection_changed": "Tu cuenta o la conexión de Linear cambiaron durante la conexión. Inténtalo de nuevo.",
-        "signed_out": "Inicia sesión en {{brand}} para conectar Linear.",
+        "signed_out": "Inicia sesión con tu cuenta de Titanium para conectar Linear.",
         "policy_blocked": "Tu organización ha desactivado los conectores.",
         "policy_unavailable": "No se pudieron comprobar los ajustes de tu organización. Inténtalo de nuevo.",
-        "permission_not_granted": "Linear no se conectó porque no se concedieron todos los permisos. Vuelve a conectar y permítelos todos."
+        "permission_not_granted": "Linear no se conectó porque no se concedieron todos los permisos. Vuelve a conectar y permítelos todos.",
+        "reauth_required": "Vuelve a iniciar sesión en tu cuenta de Titanium para conectar Linear.",
+        "plan_required": "Conectar Linear requiere una licencia activa de {{brand}}."
       },
       "browser": {
         "connectedTitle": "Linear está conectado",
@@ -4577,8 +4622,9 @@
       "cardLimit": "Solo se pueden preparar {{max}} tarjetas por solicitud."
     },
     "beta": "Beta",
-    "upsell": "Los conectores se incluyen en los planes de pago. Mejora tu plan para que el asistente trabaje en tus herramientas.",
-    "locked": "Incluido en los planes de pago"
+    "upsell": "Los conectores requieren una licencia activa de {{brand}}. Inicia sesión con tu cuenta de Titanium para que el asistente trabaje en tus herramientas.",
+    "locked": "Incluido con una licencia de {{brand}}",
+    "upsellAction": "Abrir cuenta de Titanium"
   },
   "calendar": {
     "title": "Google Calendar",
@@ -5086,6 +5132,14 @@
     "permissionRestricted": "Restringido",
     "permissionNotDetermined": "No solicitado"
   },
+  "calendarConnect": {
+    "browser": {
+      "connectedTitle": "El calendario está conectado",
+      "connectedBody": "Puedes cerrar esta pestaña y volver a {{brand}}.",
+      "failedTitle": "No se conectó el calendario",
+      "failedBody": "No se completó la conexión del calendario. Vuelve a {{brand}} para intentarlo de nuevo."
+    }
+  },
   "titaniumAccount": {
     "title": "Cuenta Titanium",
     "description": "Inicia sesión con tu cuenta de Titanium Labs para usar {{brand}} con nuestros servidores de transcripción.",
@@ -5120,6 +5174,96 @@
       "token_not_found": "Ese enlace ya se usó o caducó. Vuelve a iniciar sesión.",
       "app_mismatch": "Ese inicio de sesión era para otra app. Vuelve a iniciar sesión desde aquí.",
       "generic": "El inicio de sesión no terminó. Inténtalo de nuevo."
+    }
+  },
+  "llmSubscriptions": {
+    "title": "Suscripciones",
+    "description": "Usa tu propio inicio de sesion de Claude, Codex, Grok o Antigravity para el chat y el agente de dictado. No se usan claves de API.",
+    "version": "v{{version}}",
+    "status": {
+      "missing": "No instalado",
+      "installing": "Instalando",
+      "installed": "Instalado",
+      "outdated": "Actualizacion necesaria",
+      "signing-in": "Iniciando sesion",
+      "signed-in": "Sesion iniciada",
+      "signed-out": "Sesion cerrada",
+      "error": "Error"
+    },
+    "seats": {
+      "claude": "CLI de Claude Code con tu suscripcion de Claude.",
+      "codex": "CLI de Codex con tu suscripcion de ChatGPT.",
+      "grok": "CLI de Grok con tu cuenta de X.",
+      "agy": "CLI de Antigravity con tu cuenta de Google."
+    },
+    "actions": {
+      "install": "Instalar",
+      "openGuide": "Abrir guia de instalacion",
+      "signIn": "Iniciar sesion",
+      "test": "Probar",
+      "redetect": "Detectar de nuevo",
+      "signOut": "Cerrar sesion",
+      "cancel": "Cancelar",
+      "copy": "Copiar",
+      "openInBrowser": "Abrir en el navegador",
+      "submitCode": "Enviar codigo"
+    },
+    "outdatedHint": "Este CLI es mas antiguo que la version con la que se probo la app. Actualizalo y elige Detectar de nuevo.",
+    "testOk": "Prueba superada.",
+    "claude": {
+      "toggleLabel": "Activar el asiento de Claude",
+      "notice": "Los terminos de Anthropic pueden no permitir una suscripcion de Claude en aplicaciones de terceros. Lo activas bajo tu propio riesgo."
+    },
+    "install": {
+      "title": "Instalar {{seat}}",
+      "description": "Esto descarga y ejecuta el instalador del proveedor. Revisa la direccion y el comando antes de continuar.",
+      "urlLabel": "Direccion del instalador",
+      "commandLabel": "Comando que se ejecutara",
+      "confirm": "Instalar",
+      "guided": "Instala el CLI de Grok desde la pagina oficial y elige Detectar de nuevo."
+    },
+    "signIn": {
+      "deviceUrlLabel": "Abre esta direccion",
+      "deviceCodeLabel": "Introduce este codigo",
+      "waiting": "Esperando a que termine el inicio de sesion.",
+      "claudeInstructions": "Abre la direccion, inicia sesion y pega el codigo que aparece en la pagina.",
+      "codeLabel": "Codigo de autorizacion",
+      "codePlaceholder": "Pega el codigo",
+      "agyGuide": "Ejecuta agy una vez en una terminal e inicia sesion con tu cuenta de Google. Luego elige Detectar de nuevo."
+    },
+    "signOut": {
+      "title": "¿Cerrar sesion en {{seat}}?",
+      "terminalCli": "Esto tambien cierra la sesion del CLI de {{seat}} en tu terminal.",
+      "claudeToken": "El token guardado se elimina de esta app. Sigue siendo valido hasta que lo revoques en la pagina de tu cuenta de Claude.",
+      "agyGuide": "Cierra sesion en Antigravity con el CLI agy en una terminal.",
+      "confirm": "Cerrar sesion"
+    },
+    "errors": {
+      "not-installed": "El CLI no esta instalado.",
+      "outdated": "El CLI es demasiado antiguo para esta app. Actualizalo y detecta de nuevo.",
+      "not-signed-in": "Sesion no iniciada. Inicia sesion e intentalo de nuevo.",
+      "api-key-login-refused": "Esta app solo usa el inicio de sesion de suscripcion, nunca claves de API.",
+      "timeout": "El CLI tardo demasiado en responder.",
+      "killed": "El CLI se detuvo.",
+      "quota-or-rate-limit": "Se alcanzo el limite de uso. Intentalo mas tarde.",
+      "exit-nonzero": "El CLI termino con un error.",
+      "parse-failed": "No se pudo leer la respuesta del CLI.",
+      "claude-disabled": "El asiento de Claude esta desactivado.",
+      "busy": "Ya hay otra solicitud en curso para este asiento.",
+      "invalid-input": "La solicitud no era valida.",
+      "signature-invalid": "No se pudo verificar la firma del instalador.",
+      "install-failed": "La instalacion no termino.",
+      "quarantined-or-missing": "Se elimino la instalacion, posiblemente por un antivirus.",
+      "generic": "Algo salio mal. Intentalo de nuevo."
+    },
+    "picker": {
+      "group": "CLI de suscripcion",
+      "helper": "Los CLI de suscripcion solo responden con texto (sin herramientas de EdgeAssistant) y son mas lentos que los proveedores de API, por eso la limpieza del dictado no los ofrece.",
+      "useApi": "Usar un proveedor de API",
+      "modelLabel": "Modelo",
+      "defaultModel": "Modelo predeterminado del CLI",
+      "empty": "Aún no hay ninguna CLI de suscripción con sesión iniciada.",
+      "openSubscriptions": "Abrir Suscripciones"
     }
   }
 }

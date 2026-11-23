@@ -9,21 +9,22 @@
   "AUTH_URL": "",
   "ADMIN_URL": "",
   "SITE_URL": "",
+  "SERVICES_URL": "https://stt.titaniumlabs.us",
   "DOCS_URL": "",
   "SUPPORT_EMAIL": "support@titaniumlabs.us",
   "SHARE_VIEWER_URL": "",
   "MCP_URL": "",
-  "REPO_URL": "https://github.com/finedesignz/openwhispr",
+  "REPO_URL": "https://github.com/finedesignz/edgeassistant",
   "COMMUNITY_URL": "",
   "ORUKEET_BASE_URL": "",
   "DEFAULT_STT": {
-    "baseUrl": "https://x1gsjcjrmssitgnh7hthg7nd.coolify.titaniumlabs.us/v1",
+    "baseUrl": "https://stt.titaniumlabs.us/v1",
     "model": "parakeet-unified-en-0.6b"
   },
   "TITANIUM": {
     "portalUrl": "https://auth.titaniumlabs.us",
     "appSlug": "titanium-whisper",
-    "keygenProductId": "",
+    "keygenProductId": "bbe843ac-4de5-486c-85e2-1a1b7e533e5f",
     "publicKey": "8eb5121238b5432c227285992d813ca688136785b9552bbe457c87dd94aadbd8"
   }
 }

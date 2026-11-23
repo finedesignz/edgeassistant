@@ -5,6 +5,8 @@ import {
 } from "../services/ai/chatRequestBody";
 import logger from "../utils/logger";
 import { BRAND_NAME } from "../config/forkRuntime";
+import { DEFAULT_STT, TITANIUM } from "../config/forkRuntime";
+import { isTitaniumServiceUrl } from "./titanium/titaniumHosts";
 import { assertValidCleanupOutput } from "../utils/cleanupOutput";
 import { isAzureOpenAIEndpoint } from "../utils/urlUtils";
 import { withSessionRefresh } from "../lib/auth";
@@ -84,7 +86,12 @@ import {
   isManagedTranscriptionActive,
 } from "../services/managedTranscription.ts";
 import { getTranscriptionApiKey } from "../services/fileTranscription";
-import { shouldSkipTranscriptionApiKey } from "./transcriptionAuth";
+import {
+  canReuseCachedTranscriptionKey,
+  customTranscriptionKeySource,
+  shouldSkipTranscriptionApiKey,
+  transcriptionDestinationUrl,
+} from "./transcriptionAuth";
 import {
   isOrukeetStreaming,
   isSelfHostedTranscription,
@@ -1650,12 +1657,22 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
         whisperModel,
         parakeetModel,
         cohereModel,
+        cloudTranscriptionProvider,
+        cloudTranscriptionBaseUrl,
       } = getSettings();
       const isNvidia = localTranscriptionProvider === "nvidia";
+      // Dictation routed Custom -> our own stt-api host previews over its WebSocket
+      // (the committed transcript still comes from the batch POST).
+      const sttApiPreview =
+        !useLocalWhisper &&
+        showTranscriptionPreview &&
+        shouldDisplayDictationPreview(showTranscriptionPreview, this.voiceAgentRequested) &&
+        cloudTranscriptionProvider === "custom" &&
+        isTitaniumServiceUrl(cloudTranscriptionBaseUrl, { DEFAULT_STT, TITANIUM });
       // Online models stream+commit during capture, so PCM runs even with preview off.
       const streamingCommit = useLocalWhisper && isNvidia && isOnlineParakeetModel(parakeetModel);
       this._streamingCommitActive = false;
-      if (useLocalWhisper && (showTranscriptionPreview || streamingCommit)) {
+      if ((useLocalWhisper && (showTranscriptionPreview || streamingCommit)) || sttApiPreview) {
         try {
           this._previewAudioContext = new AudioContext({ sampleRate: 16000 });
           this._previewSource = this._previewAudioContext.createMediaStreamSource(micStream);
@@ -1680,15 +1697,27 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
               ? cohereModel
               : whisperModel;
           const language = getBaseLanguageCode(getSettings().preferredLanguage);
-          window.electronAPI?.startDictationPreview?.({
-            provider: localTranscriptionProvider,
+          const previewStarted = window.electronAPI?.startDictationPreview?.({
+            provider: sttApiPreview ? "stt-api" : localTranscriptionProvider,
             model,
             language,
             display: shouldDisplayDictationPreview(
               showTranscriptionPreview,
               this.voiceAgentRequested
             ),
+            ...(sttApiPreview ? { baseUrl: cloudTranscriptionBaseUrl } : {}),
           });
+          if (sttApiPreview) {
+            // Signed out or refused: stop this session's worklet, show no preview.
+            const processor = this._previewProcessor;
+            Promise.resolve(previewStarted)
+              .then((result) => {
+                if (result?.success !== false || this._previewProcessor !== processor) return;
+                logger.warn("stt-api preview unavailable", { reason: result.reason }, "audio");
+                return this.cleanupPreview({ dismiss: true });
+              })
+              .catch(() => {});
+          }
           this._streamingCommitActive = streamingCommit;
         } catch (e) {
           logger.warn("Preview worklet setup failed", { error: e.message }, "audio");
@@ -2689,7 +2718,13 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
     const provider = s.cloudTranscriptionProvider || "openai";
 
     // Check cache (invalidate if provider changed)
-    if (this.cachedApiKey !== null && this.cachedApiKeyProvider === provider) {
+    const destinationUrl = transcriptionDestinationUrl(s);
+    const isTitaniumService = isTitaniumServiceUrl(destinationUrl, { DEFAULT_STT, TITANIUM });
+    if (
+      this.cachedApiKey !== null &&
+      this.cachedApiKeyProvider === provider &&
+      canReuseCachedTranscriptionKey({ provider, isTitaniumService })
+    ) {
       return this.cachedApiKey;
     }
 
@@ -2721,14 +2756,18 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
         "transcription"
       );
 
-      // Fork: with no key of their own, signed-in users reach our STT API with their
-      // Titanium license (main only hands it out for our own hosts). Not cached, so
-      // signing in or out takes effect on the next request.
-      if (!apiKey) {
+      // Fork: on our own hosts the signed-in user's Titanium license always wins and a
+      // stored custom key is never sent (main only hands the license out for our own
+      // hosts). Not cached, so signing in or out takes effect on the next request.
+      if (
+        customTranscriptionKeySource({
+          storedKey: apiKey,
+          isTitaniumService,
+        }) === "titanium"
+      ) {
+        apiKey = "";
         try {
-          const titaniumKey = await window.electronAPI.getTitaniumServiceKey?.(
-            s.cloudTranscriptionBaseUrl || ""
-          );
+          const titaniumKey = await window.electronAPI.getTitaniumServiceKey?.(destinationUrl);
           if (titaniumKey) return titaniumKey;
         } catch {
           // Signed out or unavailable: fall through to an unauthenticated request.

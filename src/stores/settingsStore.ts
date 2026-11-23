@@ -18,6 +18,8 @@ import { normalizeToneStyles, type ToneStyles } from "../config/toneStyle";
 import { PROMPT_KIND_LIST, type PromptKind } from "../config/prompts/registry";
 import { sweepRetiredPromptOverrides } from "../config/retiredPrompts";
 import { FORK_DEFAULTS } from "../config/forkDefaults";
+import { CLOUD_ENABLED } from "../config/forkRuntime";
+import { migrateSavedSttUrls } from "../config/forkSttMigration";
 import {
   sweepRetiredCloudModelSelections,
   type RetiredModelProvider,
@@ -896,6 +898,19 @@ function migrateRetiredCloudModels() {
 
 migrateRetiredCloudModels();
 
+// STT-03: saved STT URLs on the old Coolify-generated hostname move to the stable
+// domain. Runs before the store reads them. Only when the hosted cloud is off,
+// the same condition under which the fork default points at our STT API.
+function migrateLegacySttHost() {
+  if (!isBrowser || CLOUD_ENABLED || !FORK_DEFAULTS.transcriptionBaseUrl) return;
+  const changed = migrateSavedSttUrls(localStorage, FORK_DEFAULTS.transcriptionBaseUrl);
+  if (changed.length > 0) {
+    logger.info("Moved saved STT URLs to the stable domain", { keys: changed }, "settings");
+  }
+}
+
+migrateLegacySttHost();
+
 export interface SettingsState
   extends
     TranscriptionSettings,
@@ -1429,6 +1444,11 @@ const SECRET_IPC_SAVERS = {
 } as const;
 
 type SecretProvider = keyof typeof SECRET_IPC_SAVERS;
+
+// Fork: true once secrets were read from the main process. Decisions that
+// depend on whether the user has BYOK keys must not run before (or without) it.
+let secretsHydrated = false;
+export const areSecretsHydrated = () => secretsHydrated;
 
 const secretSaveTimers: Partial<Record<SecretProvider, ReturnType<typeof setTimeout>>> = {};
 function debouncedSaveSecret(provider: SecretProvider, key: string) {
@@ -2666,6 +2686,10 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
       s.setCloudTranscriptionBaseUrl(settings.cloudTranscriptionBaseUrl);
     if (settings.cloudTranscriptionMode !== undefined)
       s.setCloudTranscriptionMode(settings.cloudTranscriptionMode);
+    if (settings.remoteTranscriptionUrl !== undefined)
+      s.setRemoteTranscriptionUrl(settings.remoteTranscriptionUrl);
+    if (settings.remoteTranscriptionModel !== undefined)
+      s.setRemoteTranscriptionModel(settings.remoteTranscriptionModel);
     if (settings.customDictionary !== undefined) s.setCustomDictionary(settings.customDictionary);
     if (settings.snippets !== undefined) s.setSnippets(settings.snippets);
     if (settings.assemblyAiStreaming !== undefined)
@@ -2708,6 +2732,14 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
     s.setUploadCloudTranscriptionMode(cloudTranscriptionMode);
     s.setUploadCloudTranscriptionProvider(cloudTranscriptionProvider);
     s.setUploadCloudTranscriptionModel(cloudTranscriptionModel);
+    // The route resolver prefers a saved self-hosted URL, so a cleared one must clear in
+    // every scope (meetings have no remote model field).
+    if (settings.remoteTranscriptionUrl !== undefined) {
+      s.setMeetingRemoteTranscriptionUrl(settings.remoteTranscriptionUrl);
+      s.setUploadRemoteTranscriptionUrl(settings.remoteTranscriptionUrl);
+    }
+    if (settings.remoteTranscriptionModel !== undefined)
+      s.setUploadRemoteTranscriptionModel(settings.remoteTranscriptionModel);
     // Seed the per-provider model memory so a later provider switch-and-return
     // in any scope restores the model onboarding chose.
     if (cloudTranscriptionProvider && cloudTranscriptionModel) {
@@ -3545,6 +3577,7 @@ export async function initializeSettings(): Promise<void> {
           hydrated.setOpenrouterApiKey(customRx);
         }
       }
+      secretsHydrated = true;
     } catch (err) {
       logger.warn(
         "Failed to hydrate secrets from main process",

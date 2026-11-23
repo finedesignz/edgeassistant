@@ -236,7 +236,9 @@ function isOAuthSchemeRegistered() {
 // can launch the project app instead of opening bare Electron.
 function getProtocolAppArgs() {
   if (!shouldRegisterProtocolWithAppArg()) return [];
-  return [process.argv[1] ? path.resolve(process.argv[1]) : path.resolve(".")];
+  // Skip Chromium switches (e.g. --remote-debugging-port from OW_DEBUG_CDP) that precede the app path.
+  const appArg = process.argv.slice(1).find((arg) => !arg.startsWith("--"));
+  return [appArg ? path.resolve(appArg) : path.resolve(".")];
 }
 
 // Register custom protocol for OAuth callbacks.
@@ -315,6 +317,7 @@ const TrayManager = require("./src/helpers/tray");
 const dockManager = require("./src/helpers/dockManager");
 const autoStart = require("./src/helpers/autoStart");
 const IPCHandlers = require("./src/helpers/ipcHandlers");
+const { initLlmCliIpc } = require("./src/helpers/llmCli/llmCliIpc");
 const CliBridge = require("./src/helpers/cliBridge");
 const UpdateManager = require("./src/updater");
 const GlobeKeyManager = require("./src/helpers/globeKeyManager");
@@ -537,11 +540,18 @@ function initializeCoreManagers() {
   // The same account receipts are filed under (ipcHandlers' getAccountScope):
   // the one bound to the credential in use. databaseManager's scope doesn't
   // move when one signed-in token replaces another.
-  const getConnectorAccountScope = () =>
-    accountScopeBinding.resolveActiveAccountScope({
-      ...require("./src/helpers/tokenStore").getState(),
-      binding: accountScopeBinding.read(),
-    });
+  // A fork build has no OpenWhispr cloud session: its connector logins are filed
+  // under the Titanium account id instead (build-mode selection, not a fallback).
+  const getConnectorAccountScope = FORK_IDENTITY.CLOUD_ENABLED
+    ? () =>
+        accountScopeBinding.resolveActiveAccountScope({
+          ...require("./src/helpers/tokenStore").getState(),
+          binding: accountScopeBinding.read(),
+        })
+    : () =>
+        require("./src/helpers/connectors/titaniumConnectorPolicy").titaniumAccountScope(
+          require("./src/helpers/titanium/titaniumIpc").getTitaniumSession()
+        );
   const getConnectorAccountId = connectorAccountIdFrom(getConnectorAccountScope);
   const connectorCredentials = createConnectorCredentials({
     store: createCredentialStore({
@@ -560,6 +570,8 @@ function initializeCoreManagers() {
       credentials: connectorCredentials,
       logger: debugLogger,
       env: process.env,
+      // A fork's calendar Google project has no gmail.send scope (D-11).
+      allowCalendarGmailClient: FORK_IDENTITY.CLOUD_ENABLED,
       openExternal: (url) => require("./src/helpers/externalUrlOpener").openExternalUrl(url),
       writeClipboard: (text, webContents) => clipboardManager.writeClipboard(text, webContents),
       // Read only when revoking a Gmail login on the calendar's Google project;
@@ -750,6 +762,11 @@ function initializeCoreManagers() {
     oauthProtocolRegistered: protocolRegistered,
     oauthProtocol: OAUTH_PROTOCOL,
   });
+
+  // Subscription-CLI runtime. Composed here, with the real electron app, and not
+  // inside IPCHandlers: IPCHandlers unit tests run it against minimal electron
+  // stubs that have no safeStorage, so wiring it there broke every one of them.
+  initLlmCliIpc({ logger: debugLogger });
 }
 
 function registerSidecars() {

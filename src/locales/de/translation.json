@@ -391,6 +391,12 @@
             "title": "Selbst gehostet",
             "description": "Verbinden Sie Ihr eigenes gehostetes Modell."
           }
+        },
+        "titanium": {
+          "title": "{{brand}}-Cloud (Titanium)",
+          "description": "Transkribiere auf den gehosteten Servern von Titanium. Melde dich mit deinem Titanium-Konto an; ein API-Schlüssel ist nicht nötig.",
+          "signIn": "Mit Titanium anmelden",
+          "continue": "Weiter"
         }
       },
       "provider": {
@@ -920,6 +926,13 @@
     "tinfoil": {
       "transportNote": "Tinfoil streamt mit Voxtral Mini 4B und verarbeitet Batches mit Voxtral Small 24B.",
       "docsLink": "Zur Dokumentation"
+    },
+    "titaniumSignIn": {
+      "message": "Melde dich bei Titanium an, um die Cloud-Transkription von {{brand}} zu nutzen.",
+      "action": "Mit Titanium anmelden"
+    },
+    "titaniumNoLicense": {
+      "message": "Dein Titanium-Konto hat keine {{brand}}-Lizenz. Wende dich an {{supportEmail}}, um eine zu erhalten."
     }
   },
   "hooks": {
@@ -1230,7 +1243,12 @@
     },
     "welcomeSubtitle": "Die Kraft Ihrer Stimme. Zu Ihren Bedingungen.",
     "welcomeTitle": "Willkommen bei {{brand}}",
-    "sessionExpired": "Sitzung abgelaufen"
+    "sessionExpired": "Sitzung abgelaufen",
+    "titanium": {
+      "signIn": "Mit Titanium anmelden",
+      "subtitle": "Melde dich mit deinem Titanium-Konto an, um die Cloud-Transkription von {{brand}} zu nutzen.",
+      "signedInAs": "Angemeldet als {{email}}"
+    }
   },
   "calendar": {
     "title": "Google Kalender",
@@ -1675,6 +1693,10 @@
       "titaniumAccount": {
         "label": "Titanium-Konto",
         "description": "Anmeldung und Lizenz"
+      },
+      "subscriptions": {
+        "label": "Abonnements",
+        "description": "Claude, Codex, Grok, Antigravity"
       }
     },
     "title": "Einstellungen"
@@ -2171,7 +2193,9 @@
         "providersDesc": "Verwenden Sie Ihren eigenen API-Schlüssel, um Ihren bevorzugten LLM-Anbieter zu verbinden.",
         "localDesc": "Modelle auf dem Gerät. Voll privat.",
         "selfHostedDesc": "Eigener Server in Ihrem Netzwerk.",
-        "enterpriseDesc": "Nutzen Sie das Cloud-Konto Ihrer Organisation (AWS, Azure, GCP)."
+        "enterpriseDesc": "Nutzen Sie das Cloud-Konto Ihrer Organisation (AWS, Azure, GCP).",
+        "subscription": "Abo",
+        "subscriptionDesc": "Nutze dein angemeldetes Claude-, Codex-, Grok- oder Antigravity-Abo."
       },
       "openwhisprCloud": "{{brand}} Cloud",
       "openwhisprCloudDescription": "Zuverlässige Ergebnisse. Keine Einrichtung nötig.",
@@ -2592,7 +2616,9 @@
         "localDesc": "Modelle auf dem Gerät. Voll privat.",
         "selfHostedDesc": "Eigener Server in Ihrem Netzwerk.",
         "enterprise": "Unternehmens-Cloud",
-        "enterpriseDesc": "Audio wird an die eigene Cloud Ihrer Organisation gesendet."
+        "enterpriseDesc": "Audio wird an die eigene Cloud Ihrer Organisation gesendet.",
+        "titanium": "{{brand}} Cloud",
+        "titaniumDesc": "Im Lieferumfang deiner Lizenz. Keine Einrichtung nötig."
       },
       "openwhisprCloud": "{{brand}} Cloud",
       "openwhisprCloudDescription": "Zuverlässige Ergebnisse. Keine Einrichtung nötig.",
@@ -2621,6 +2647,10 @@
         "switchedEnterprise": {
           "title": "Unternehmens-Cloud ausgewählt",
           "description": "Diktate verwenden jetzt die von Ihrer Organisation verwaltete Transkription."
+        },
+        "switchedTitanium": {
+          "title": "{{brand}} Cloud",
+          "description": "Die {{brand}}-Cloud-Transkription wird verwendet."
         }
       },
       "gpuDevice": {
@@ -2686,7 +2716,12 @@
         }
       },
       "meetingEnterpriseOnly": "Ihre Organisation erlaubt nur Unternehmens-Cloud-Transkription, die Besprechungsaufnahmen noch nicht abdeckt.",
-      "meetingCloudSignedOut": "Notizaufnahmen mit {{brand}} Cloud können nicht starten, solange Sie abgemeldet sind. Wählen Sie oben eine andere Engine."
+      "meetingCloudSignedOut": "Notizaufnahmen mit {{brand}} Cloud können nicht starten, solange Sie abgemeldet sind. Wählen Sie oben eine andere Engine.",
+      "titaniumEngine": {
+        "connected": "Verbunden",
+        "expires": "Lizenz läuft am {{date}} ab",
+        "retry": "Erneut versuchen"
+      }
     },
     "intelligence": {
       "gpuDevice": {
@@ -3572,6 +3607,7 @@
       "unsupportedProvider": "Die Notizaufnahme kann {{provider}} nicht für die Live-Transkription verwenden. Öffne die Einstellungen und wähle Lokal oder einen Streaming-Anbieter.",
       "noProviderSelected": "Für die Notizaufnahme ist kein Anbieter ausgewählt. Öffne die Einstellungen und wähle Lokal oder einen Streaming-Anbieter.",
       "signInRequired": "Für die Notizaufnahme musst du angemeldet sein. Bitte melde dich an.",
+      "titaniumSignInRequired": "Melde dich bei {{brand}} an, um Meetings zu transkribieren.",
       "signInExpired": "Deine Anmeldung ist abgelaufen, daher kann die Notizaufnahme ihre Verbindung nicht erneuern und stoppt möglicherweise. Melde dich nach dem Ende dieser Aufnahme erneut an.",
       "systemAudioSilent": {
         "title": "Noch kein Meeting-Ton erkannt",
@@ -4247,7 +4283,8 @@
     "connectors": {
       "description": "Lass den Assistenten deine Tools nutzen. Du bestätigst jede E-Mail, jede Nachricht und jedes Issue, bevor es rausgeht."
     },
-    "readDocs": "Dokumentation lesen"
+    "readDocs": "Dokumentation lesen",
+    "notAvailableInBuild": "In dieser Version nicht verfügbar"
   },
   "connectors": {
     "approval": {
@@ -4445,9 +4482,11 @@
         "token_exchange_failed": "Slack hat die Verbindung nicht abgeschlossen. Versuche es erneut.",
         "not_configured": "Slack ist in dieser Version nicht verfügbar.",
         "connection_changed": "Dein Konto oder die Slack-Verbindung hat sich während der Verbindung geändert. Versuche es erneut.",
-        "signed_out": "Melde dich bei {{brand}} an, um Slack zu verbinden.",
+        "signed_out": "Melde dich mit deinem Titanium-Konto an, um Slack zu verbinden.",
         "policy_blocked": "Konnektoren wurden von deiner Organisation deaktiviert.",
-        "policy_unavailable": "Die Einstellungen deiner Organisation konnten nicht geprüft werden. Versuche es erneut."
+        "policy_unavailable": "Die Einstellungen deiner Organisation konnten nicht geprüft werden. Versuche es erneut.",
+        "reauth_required": "Melde dich erneut bei deinem Titanium-Konto an, um Slack zu verbinden.",
+        "plan_required": "Für die Verbindung mit Slack ist eine aktive {{brand}}-Lizenz erforderlich."
       },
       "browser": {
         "connectedTitle": "Slack ist verbunden",
@@ -4476,13 +4515,15 @@
         "token_exchange_failed": "GitHub hat die Verbindung nicht abgeschlossen. Versuche es erneut.",
         "not_configured": "GitHub ist in dieser Version nicht verfügbar.",
         "connection_changed": "Dein Konto oder die GitHub-Verbindung hat sich während der Verbindung geändert. Versuche es erneut.",
-        "signed_out": "Melde dich bei {{brand}} an, um GitHub zu verbinden.",
+        "signed_out": "Melde dich mit deinem Titanium-Konto an, um GitHub zu verbinden.",
         "policy_blocked": "Konnektoren wurden von deiner Organisation deaktiviert.",
         "policy_unavailable": "Die Einstellungen deiner Organisation konnten nicht geprüft werden. Versuche es erneut.",
         "code_expired": "Der Code ist abgelaufen. Versuche es erneut.",
         "device_flow_disabled": "Die Anmeldung bei GitHub mit einem Code ist in dieser Version nicht eingerichtet.",
         "network": "GitHub ist nicht erreichbar. Prüfe deine Verbindung und versuche es erneut.",
-        "rate_limited": "GitHub ist gerade ausgelastet. Versuche es in einer Minute erneut."
+        "rate_limited": "GitHub ist gerade ausgelastet. Versuche es in einer Minute erneut.",
+        "reauth_required": "Melde dich erneut bei deinem Titanium-Konto an, um GitHub zu verbinden.",
+        "plan_required": "Für die Verbindung mit GitHub ist eine aktive {{brand}}-Lizenz erforderlich."
       },
       "deviceCode": {
         "instructions": "Gib diesen Code auf GitHub ein:",
@@ -4516,12 +4557,14 @@
         "token_exchange_failed": "Google hat die Verbindung nicht abgeschlossen. Versuche es erneut.",
         "not_configured": "Gmail ist in dieser Version nicht verfügbar.",
         "connection_changed": "Dein Konto oder die Gmail-Verbindung hat sich während der Verbindung geändert. Versuche es erneut.",
-        "signed_out": "Melde dich bei {{brand}} an, um Gmail zu verbinden.",
+        "signed_out": "Melde dich mit deinem Titanium-Konto an, um Gmail zu verbinden.",
         "policy_blocked": "Konnektoren wurden von deiner Organisation deaktiviert.",
         "policy_unavailable": "Die Einstellungen deiner Organisation konnten nicht geprüft werden. Versuche es erneut.",
         "permission_not_granted": "Gmail wurde nicht verbunden, da die Berechtigung zum Senden von E-Mails nicht erteilt wurde. Verbinde erneut und lass diese Berechtigung aktiviert.",
         "email_not_verified": "Google hat die E-Mail-Adresse dieses Kontos nicht bestätigt, daher wurde Gmail nicht verbunden.",
-        "domain_policy": "Der Google-Administrator deiner Organisation hat diese App blockiert. Bitte ihn, {{brand}} zuzulassen."
+        "domain_policy": "Der Google-Administrator deiner Organisation hat diese App blockiert. Bitte ihn, {{brand}} zuzulassen.",
+        "reauth_required": "Melde dich erneut bei deinem Titanium-Konto an, um Gmail zu verbinden.",
+        "plan_required": "Für die Verbindung mit Gmail ist eine aktive {{brand}}-Lizenz erforderlich."
       },
       "browser": {
         "connectedTitle": "Gmail ist verbunden",
@@ -4549,10 +4592,12 @@
         "token_exchange_failed": "Linear hat die Verbindung nicht abgeschlossen. Versuche es erneut.",
         "not_configured": "Linear ist in dieser Version nicht verfügbar.",
         "connection_changed": "Dein Konto oder die Linear-Verbindung hat sich während der Verbindung geändert. Versuche es erneut.",
-        "signed_out": "Melde dich bei {{brand}} an, um Linear zu verbinden.",
+        "signed_out": "Melde dich mit deinem Titanium-Konto an, um Linear zu verbinden.",
         "policy_blocked": "Konnektoren wurden von deiner Organisation deaktiviert.",
         "policy_unavailable": "Die Einstellungen deiner Organisation konnten nicht geprüft werden. Versuche es erneut.",
-        "permission_not_granted": "Linear wurde nicht verbunden, da nicht alle Berechtigungen erteilt wurden. Verbinde erneut und erlaube alle."
+        "permission_not_granted": "Linear wurde nicht verbunden, da nicht alle Berechtigungen erteilt wurden. Verbinde erneut und erlaube alle.",
+        "reauth_required": "Melde dich erneut bei deinem Titanium-Konto an, um Linear zu verbinden.",
+        "plan_required": "Für die Verbindung mit Linear ist eine aktive {{brand}}-Lizenz erforderlich."
       },
       "browser": {
         "connectedTitle": "Linear ist verbunden",
@@ -4697,8 +4742,9 @@
       "cardLimit": "Pro Anfrage können nur {{max}} Karten vorbereitet werden."
     },
     "beta": "Beta",
-    "upsell": "Konnektoren sind in kostenpflichtigen Tarifen enthalten. Upgrade, damit der Assistent in deinen Tools arbeiten kann.",
-    "locked": "In kostenpflichtigen Tarifen enthalten"
+    "upsell": "Konnektoren erfordern eine aktive {{brand}}-Lizenz. Melde dich mit deinem Titanium-Konto an, damit der Assistent in deinen Tools arbeiten kann.",
+    "locked": "In einer {{brand}}-Lizenz enthalten",
+    "upsellAction": "Titanium-Konto öffnen"
   },
   "notesView": {
     "searchPlaceholder": "Notizen durchsuchen…",
@@ -5086,6 +5132,14 @@
     "permissionRestricted": "Eingeschränkt",
     "permissionNotDetermined": "Nicht angefragt"
   },
+  "calendarConnect": {
+    "browser": {
+      "connectedTitle": "Kalender ist verbunden",
+      "connectedBody": "Du kannst diesen Tab schließen und zu {{brand}} zurückkehren.",
+      "failedTitle": "Kalender wurde nicht verbunden",
+      "failedBody": "Das Verbinden des Kalenders wurde nicht abgeschlossen. Kehre zu {{brand}} zurück, um es erneut zu versuchen."
+    }
+  },
   "titaniumAccount": {
     "title": "Titanium-Konto",
     "description": "Melde dich mit deinem Titanium-Labs-Konto an, um {{brand}} mit unseren Transkriptionsservern zu nutzen.",
@@ -5120,6 +5174,96 @@
       "token_not_found": "Dieser Link wurde schon benutzt oder ist abgelaufen. Starte die Anmeldung neu.",
       "app_mismatch": "Diese Anmeldung galt einer anderen App. Starte sie hier neu.",
       "generic": "Die Anmeldung wurde nicht abgeschlossen. Versuche es erneut."
+    }
+  },
+  "llmSubscriptions": {
+    "title": "Abonnements",
+    "description": "Nutze deine eigene Anmeldung bei Claude, Codex, Grok oder Antigravity fuer den Chat und den Diktier-Agenten. API-Schluessel werden nicht verwendet.",
+    "version": "v{{version}}",
+    "status": {
+      "missing": "Nicht installiert",
+      "installing": "Wird installiert",
+      "installed": "Installiert",
+      "outdated": "Update erforderlich",
+      "signing-in": "Anmeldung laeuft",
+      "signed-in": "Angemeldet",
+      "signed-out": "Abgemeldet",
+      "error": "Fehler"
+    },
+    "seats": {
+      "claude": "Claude-Code-CLI mit deinem Claude-Abonnement.",
+      "codex": "Codex-CLI mit deinem ChatGPT-Abonnement.",
+      "grok": "Grok-CLI mit deinem X-Konto.",
+      "agy": "Antigravity-CLI mit deinem Google-Konto."
+    },
+    "actions": {
+      "install": "Installieren",
+      "openGuide": "Installationsanleitung oeffnen",
+      "signIn": "Anmelden",
+      "test": "Testen",
+      "redetect": "Erneut erkennen",
+      "signOut": "Abmelden",
+      "cancel": "Abbrechen",
+      "copy": "Kopieren",
+      "openInBrowser": "Im Browser oeffnen",
+      "submitCode": "Code senden"
+    },
+    "outdatedHint": "Dieses CLI ist aelter als die getestete Version. Aktualisiere es und waehle Erneut erkennen.",
+    "testOk": "Test bestanden.",
+    "claude": {
+      "toggleLabel": "Claude-Platz aktivieren",
+      "notice": "Die Bedingungen von Anthropic erlauben ein Claude-Abonnement in Apps von Drittanbietern moeglicherweise nicht. Du aktivierst dies auf eigenes Risiko."
+    },
+    "install": {
+      "title": "{{seat}} installieren",
+      "description": "Dies laedt das Installationsprogramm des Anbieters herunter und fuehrt es aus. Pruefe Adresse und Befehl, bevor du fortfaehrst.",
+      "urlLabel": "Adresse des Installationsprogramms",
+      "commandLabel": "Befehl, der ausgefuehrt wird",
+      "confirm": "Installieren",
+      "guided": "Installiere das Grok-CLI ueber die offizielle Seite und waehle dann Erneut erkennen."
+    },
+    "signIn": {
+      "deviceUrlLabel": "Oeffne diese Adresse",
+      "deviceCodeLabel": "Gib diesen Code ein",
+      "waiting": "Warte, bis die Anmeldung abgeschlossen ist.",
+      "claudeInstructions": "Oeffne die Adresse, melde dich an und fuege den auf der Seite angezeigten Code ein.",
+      "codeLabel": "Autorisierungscode",
+      "codePlaceholder": "Code einfuegen",
+      "agyGuide": "Fuehre agy einmal in einem Terminal aus und melde dich mit deinem Google-Konto an. Waehle dann Erneut erkennen."
+    },
+    "signOut": {
+      "title": "Von {{seat}} abmelden?",
+      "terminalCli": "Dadurch wird auch das {{seat}}-CLI in deinem Terminal abgemeldet.",
+      "claudeToken": "Das gespeicherte Token wird aus dieser App entfernt. Es bleibt gueltig, bis du es auf der Claude-Kontoseite widerrufst.",
+      "agyGuide": "Melde dich in einem Terminal mit dem agy-CLI von Antigravity ab.",
+      "confirm": "Abmelden"
+    },
+    "errors": {
+      "not-installed": "Das CLI ist nicht installiert.",
+      "outdated": "Das CLI ist fuer diese App zu alt. Aktualisiere es und erkenne erneut.",
+      "not-signed-in": "Nicht angemeldet. Melde dich an und versuche es erneut.",
+      "api-key-login-refused": "Diese App nutzt nur die Abonnement-Anmeldung, niemals API-Schluessel.",
+      "timeout": "Das CLI hat zu lange gebraucht.",
+      "killed": "Das CLI wurde beendet.",
+      "quota-or-rate-limit": "Nutzungs- oder Ratenlimit erreicht. Versuche es spaeter erneut.",
+      "exit-nonzero": "Das CLI wurde mit einem Fehler beendet.",
+      "parse-failed": "Die Antwort des CLI konnte nicht gelesen werden.",
+      "claude-disabled": "Der Claude-Platz ist deaktiviert.",
+      "busy": "Fuer diesen Platz laeuft bereits eine andere Anfrage.",
+      "invalid-input": "Die Anfrage war ungueltig.",
+      "signature-invalid": "Die Signatur des Installationsprogramms konnte nicht geprueft werden.",
+      "install-failed": "Die Installation wurde nicht abgeschlossen.",
+      "quarantined-or-missing": "Die Installation wurde entfernt, moeglicherweise durch eine Antivirensoftware.",
+      "generic": "Etwas ist schiefgelaufen. Versuche es erneut."
+    },
+    "picker": {
+      "group": "Abonnement-CLIs",
+      "helper": "Abonnement-CLIs antworten nur mit Text (keine EdgeAssistant-Werkzeuge) und sind langsamer als API-Anbieter, daher bietet die Diktatbereinigung sie nicht an.",
+      "useApi": "Stattdessen einen API-Anbieter nutzen",
+      "modelLabel": "Modell",
+      "defaultModel": "Standardmodell des CLI",
+      "empty": "Noch keine Abo-CLI angemeldet.",
+      "openSubscriptions": "Abos öffnen"
     }
   }
 }
