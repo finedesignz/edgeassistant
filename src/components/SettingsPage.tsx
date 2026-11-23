@@ -641,19 +641,15 @@ function TranscriptionSection({
     forkConfig: { DEFAULT_STT, TITANIUM },
   });
   const transcriptionTabs: InferenceModeOption<InferenceMode | "titanium">[] = titaniumTabOffered
-    ? transcriptionModes.flatMap((option) =>
-        option.id === "providers"
-          ? [
-              option,
-              {
-                id: "titanium" as const,
-                label: t("settingsPage.transcription.modes.titanium"),
-                description: t("settingsPage.transcription.modes.titaniumDesc"),
-                icon: <Cloud className="w-4 h-4" />,
-              },
-            ]
-          : [option]
-      )
+    ? [
+        {
+          id: "titanium" as const,
+          label: t("settingsPage.transcription.modes.titanium"),
+          description: t("settingsPage.transcription.modes.titaniumDesc"),
+          icon: <Cloud className="w-4 h-4" />,
+        },
+        ...transcriptionModes,
+      ]
     : transcriptionModes;
   const handleTranscriptionModeSelect = (mode: InferenceMode | "titanium") => {
     if (mode === "titanium") {
