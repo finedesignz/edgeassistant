@@ -153,9 +153,6 @@ export default function LlmSubscriptionsSection() {
                 </div>
               </SettingsRow>
 
-              {view.noticeKey && (
-                <p className="mt-2 text-xs text-muted-foreground">{t(view.noticeKey)}</p>
-              )}
               {has("openGuide") && (
                 <p className="mt-2 text-xs text-muted-foreground">
                   {t("llmSubscriptions.install.guided")}

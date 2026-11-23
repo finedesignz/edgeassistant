@@ -5211,8 +5211,7 @@
     "outdatedHint": "此 CLI 版本低於應用程式測試所用的版本。請更新後選擇重新偵測。",
     "testOk": "測試通過。",
     "claude": {
-      "toggleLabel": "啟用 Claude 席位",
-      "notice": "Anthropic 的條款可能不允許在第三方應用程式中使用 Claude 訂閱。啟用即表示風險自負。"
+      "toggleLabel": "啟用 Claude 席位"
     },
     "install": {
       "title": "安裝 {{seat}}",

@@ -5211,8 +5211,7 @@
     "outdatedHint": "Questo CLI e piu vecchio della versione testata con l'app. Aggiornalo e scegli Rileva di nuovo.",
     "testOk": "Prova superata.",
     "claude": {
-      "toggleLabel": "Attiva la postazione Claude",
-      "notice": "I termini di Anthropic potrebbero non consentire un abbonamento Claude in app di terze parti. Lo attivi a tuo rischio."
+      "toggleLabel": "Attiva la postazione Claude"
     },
     "install": {
       "title": "Installa {{seat}}",

@@ -5211,8 +5211,7 @@
     "outdatedHint": "Dieses CLI ist aelter als die getestete Version. Aktualisiere es und waehle Erneut erkennen.",
     "testOk": "Test bestanden.",
     "claude": {
-      "toggleLabel": "Claude-Platz aktivieren",
-      "notice": "Die Bedingungen von Anthropic erlauben ein Claude-Abonnement in Apps von Drittanbietern moeglicherweise nicht. Du aktivierst dies auf eigenes Risiko."
+      "toggleLabel": "Claude-Platz aktivieren"
     },
     "install": {
       "title": "{{seat}} installieren",
