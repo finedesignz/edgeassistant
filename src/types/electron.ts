@@ -2509,6 +2509,22 @@ declare global {
       // xAI API key management
       getXaiKey?: () => Promise<string | null>;
       saveXaiKey?: (key: string) => Promise<void>;
+      proxySttUpload?: (data: {
+        url: string;
+        headers: Record<string, string>;
+        audioBuffer: ArrayBuffer;
+        fileName: string;
+        mimeType: string;
+        fields: [string, string][];
+      }) => Promise<
+        | {
+            status: number;
+            statusText: string;
+            headers: Record<string, string>;
+            body: string | null;
+          }
+        | IpcErrorFields
+      >;
       proxyXaiTranscription?: (data: {
         audioBuffer: ArrayBuffer;
         language?: string;

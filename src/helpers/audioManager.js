@@ -4212,12 +4212,40 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
       this._activeTranscriptionAbortController = requestController;
       let response;
       try {
-        response = await fetch(endpoint, {
-          method: "POST",
-          headers,
-          body: formData,
-          signal: requestController.signal,
-        });
+        // Custom/self-hosted servers rarely send CORS headers and the overlay keeps
+        // webSecurity on, so upload through the main process and rebuild the
+        // Response from its status/headers/body.
+        const proxyUpload = window.electronAPI?.proxySttUpload;
+        if ((route.provider === "custom" || route.provider === "self-hosted") && proxyUpload) {
+          const fields = [];
+          for (const [name, value] of formData.entries()) {
+            if (typeof value === "string") fields.push([name, value]);
+          }
+          const proxied = await proxyUpload({
+            url: endpoint,
+            headers,
+            audioBuffer: await uploadAudio.arrayBuffer(),
+            fileName: `audio.${extension}`,
+            mimeType,
+            fields,
+          });
+          if (requestController.signal.aborted) {
+            throw new DOMException("Transcription cancelled", "AbortError");
+          }
+          if (proxied?.error) throw errorFromIpcResult(proxied);
+          response = new Response(proxied.body, {
+            status: proxied.status,
+            statusText: proxied.statusText,
+            headers: proxied.headers,
+          });
+        } else {
+          response = await fetch(endpoint, {
+            method: "POST",
+            headers,
+            body: formData,
+            signal: requestController.signal,
+          });
+        }
       } catch (err) {
         throw asProviderError(err, providerErrorContext);
       }

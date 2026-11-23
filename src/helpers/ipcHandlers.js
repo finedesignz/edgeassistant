@@ -7,6 +7,12 @@ const os = require("os");
 const { isRestorablePasteTarget } = require("./windowsPasteTarget");
 const { titaniumServiceKeyFor, onTitaniumStateChanged } = require("./titanium/titaniumIpc");
 const { sttApiStreamUrl } = require("./sttApiStreamPolicy");
+const {
+  isAllowedSttTarget,
+  pickFormFields,
+  pickRequestHeaders,
+  shapeProxyResponse,
+} = require("./sttProxyPolicy");
 const { createSttApiPreviewStream } = require("./sttApiStreaming");
 const { forkWebSearch } = require("./forkWebSearch");
 const crypto = require("crypto");
@@ -4932,6 +4938,48 @@ class IPCHandlers {
         };
       }
     });
+
+    // Custom/self-hosted STT upload. The overlay keeps webSecurity on and such
+    // servers rarely send CORS headers, so the renderer cannot read their reply.
+    // Returns the raw status/headers/body so renderer error mapping is unchanged.
+    ipcMain.handle(
+      "proxy-stt-upload",
+      serializeIpcError(
+        async (event, { url, headers, audioBuffer, fileName, mimeType, fields }) => {
+          if (!isAllowedSttTarget(url)) {
+            throw new Error("STT endpoint must use https (or http on localhost)");
+          }
+          const formData = new FormData();
+          formData.append(
+            "file",
+            new Blob([Buffer.from(audioBuffer)], { type: mimeType || "audio/webm" }),
+            fileName || "audio.webm"
+          );
+          for (const [name, value] of pickFormFields(fields)) {
+            formData.append(name, value);
+          }
+
+          const response = await proxyFetch(url, {
+            method: "POST",
+            headers: pickRequestHeaders(headers),
+            body: formData,
+          });
+          const body = await response.text();
+          if (!response.ok) {
+            debugLogger.warn("STT upload failed", {
+              status: response.status,
+              body: redactProviderBody(body),
+            });
+          }
+          return shapeProxyResponse({
+            status: response.status,
+            statusText: response.statusText,
+            headers: Object.fromEntries(response.headers.entries()),
+            body,
+          });
+        }
+      )
+    );
 
     ipcMain.handle(
       "proxy-xai-transcription",
