@@ -5211,8 +5211,7 @@
     "outdatedHint": "This CLI is older than the version this app was tested with. Update it, then choose Re-detect.",
     "testOk": "Test passed.",
     "claude": {
-      "toggleLabel": "Enable the Claude seat",
-      "notice": "Anthropic's terms may not allow a Claude subscription in third-party apps. You enable this at your own risk."
+      "toggleLabel": "Enable the Claude seat"
     },
     "install": {
       "title": "Install {{seat}}",

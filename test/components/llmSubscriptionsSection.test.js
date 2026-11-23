@@ -129,12 +129,12 @@ test("grok has a guided install model with the official link and no confirm url"
   assert.equal(model.confirmUrl, null);
 });
 
-test("claude row is disabled while off, shows a toggle, and the notice only after enabling", () => {
+test("claude row is disabled while off and shows a toggle", () => {
   const off = view.seatViewModel("claude", { status: "installed" }, NOT_ENABLED);
   assert.equal(off.disabled, true);
   assert.equal(off.showToggle, true);
   assert.equal(off.claudeEnabled, false);
-  assert.equal(off.noticeKey, null);
+  assert.equal("noticeKey" in off, false);
   assert.deepEqual(off.actions, []);
 
   const missingPrefs = view.seatViewModel("claude", { status: "installed" }, undefined);
@@ -142,16 +142,21 @@ test("claude row is disabled while off, shows a toggle, and the notice only afte
 
   const on = view.seatViewModel("claude", { status: "signed-in" }, ENABLED);
   assert.equal(on.disabled, false);
-  assert.equal(on.noticeKey, "llmSubscriptions.claude.notice");
   assert.deepEqual(on.actions, ["test", "signout", "redetect"]);
 });
 
-test("the other three rows never show the toggle or the Claude notice", () => {
+test("claude offers Test when signed out (no stored token), like the other seats", () => {
+  const out = view.seatViewModel("claude", { status: "signed-out" }, ENABLED);
+  assert.deepEqual(out.actions, ["signin", "test", "redetect"]);
+  const installed = view.seatViewModel("claude", { status: "installed" }, ENABLED);
+  assert.deepEqual(installed.actions, ["signin", "test", "redetect"]);
+});
+
+test("the other three rows never show the toggle", () => {
   for (const seat of ["codex", "grok", "agy"]) {
     for (const prefs of [NOT_ENABLED, ENABLED]) {
       const vm = view.seatViewModel(seat, { status: "signed-in" }, prefs);
       assert.equal(vm.showToggle, false, seat);
-      assert.equal(vm.noticeKey, null, seat);
       assert.equal(vm.disabled, false, seat);
     }
   }
