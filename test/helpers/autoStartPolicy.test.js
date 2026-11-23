@@ -4,6 +4,8 @@ const assert = require("node:assert/strict");
 const {
   HIDDEN_LAUNCH_FLAG,
   getLoginItemArgs,
+  resolveLoginItemWrite,
+  needsDevLoginItemRemoval,
   resolveAutoStartState,
   needsHiddenFlagMigration,
   wasLaunchedHidden,
@@ -203,5 +205,55 @@ test("the AppImage waiter outlives this process, then execs the file with its ar
         "--no-sandbox",
       ],
     }
+  );
+});
+
+// An unpackaged run registers `electron.exe --hidden` with no app path, which opens
+// the bare Electron welcome window at sign-in.
+test("unpackaged builds never register a login item", () => {
+  assert.deepEqual(resolveLoginItemWrite({ enabled: true, isPackaged: false }), {
+    openAtLogin: false,
+  });
+  assert.deepEqual(resolveLoginItemWrite({ enabled: true, isPackaged: true }), {
+    openAtLogin: true,
+  });
+  assert.deepEqual(resolveLoginItemWrite({ enabled: false, isPackaged: true }), {
+    openAtLogin: false,
+  });
+});
+
+test("an unpackaged run removes a login item an earlier build left behind", () => {
+  assert.equal(
+    needsDevLoginItemRemoval({ isPackaged: false, loginItemSettings: { openAtLogin: true } }),
+    true
+  );
+  assert.equal(
+    needsDevLoginItemRemoval({
+      isPackaged: false,
+      loginItemSettings: { openAtLogin: false, executableWillLaunchAtLogin: true },
+    }),
+    true
+  );
+  assert.equal(
+    needsDevLoginItemRemoval({
+      isPackaged: false,
+      loginItemSettings: { openAtLogin: false, executableWillLaunchAtLogin: false },
+    }),
+    false
+  );
+  assert.equal(
+    needsDevLoginItemRemoval({ isPackaged: true, loginItemSettings: { openAtLogin: true } }),
+    false
+  );
+});
+
+test("unpackaged builds report auto-start as disabled", () => {
+  assert.deepEqual(
+    resolveAutoStartState({
+      platform: "win32",
+      loginItemSettings: { executableWillLaunchAtLogin: true },
+      isPackaged: false,
+    }),
+    { enabled: false, requiresApproval: false }
   );
 });
