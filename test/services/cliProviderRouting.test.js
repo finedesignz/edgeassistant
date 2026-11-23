@@ -123,8 +123,10 @@ test("a CLI provider is valid only in providers mode", () => {
 
 test("the editor mounts the CLI picker only behind the scope allowlist", () => {
   const src = read("src/components/settings/InferenceConfigEditor.tsx");
-  assert.match(src, /CLI_SCOPE_ALLOWLIST\.includes\(scope\)/);
+  assert.match(src, /isSubscriptionModeOffered\(scope\)/);
   assert.match(src, /<CliProviderPicker/);
+  const policy = read("src/helpers/llmCli/subscriptionMode.js");
+  assert.match(policy, /CLI_SCOPE_ALLOWLIST\.includes\(scope\)/);
 });
 
 test("the agent branch builds the CLI model with no tools and no key resolution", () => {
