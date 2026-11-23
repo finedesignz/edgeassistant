@@ -5211,8 +5211,7 @@
     "outdatedHint": "Ce CLI est plus ancien que la version testee avec l'application. Mettez-le a jour, puis choisissez Detecter a nouveau.",
     "testOk": "Test reussi.",
     "claude": {
-      "toggleLabel": "Activer le siege Claude",
-      "notice": "Les conditions d'Anthropic peuvent interdire l'usage d'un abonnement Claude dans des applications tierces. Vous l'activez a vos risques."
+      "toggleLabel": "Activer le siege Claude"
     },
     "install": {
       "title": "Installer {{seat}}",
