@@ -532,7 +532,29 @@ function initializeCoreManagers() {
 
   windowManager = new WindowManager();
   hotkeyManager = windowManager.hotkeyManager;
-  databaseManager = new DatabaseManager();
+  try {
+    databaseManager = new DatabaseManager();
+  } catch (err) {
+    const message = String(err?.message || err);
+    if (message.includes("NODE_MODULE_VERSION") || err?.code === "ERR_DLOPEN_FAILED") {
+      debugLogger.error(
+        "better-sqlite3 was built for a different Node/Electron ABI than this Electron binary. " +
+          "Run `npm run postinstall` (node scripts/rebuild-native-deps.js) with ELECTRON_RUN_AS_NODE " +
+          "unset so the native module is rebuilt against this Electron's ABI, then relaunch.",
+        { error: message }
+      );
+      // Rethrow with an actionable message instead of exiting here: returning
+      // would let startApp() keep running with no databaseManager. Its
+      // .catch() already shows the startup error dialog and exits(1).
+      const abiError = new Error(
+        "A native module (better-sqlite3) was built for a different Node/Electron version. " +
+          "Run `node scripts/rebuild-native-deps.js` (or `npm run postinstall`) and restart the app.",
+        { cause: err }
+      );
+      throw abiError;
+    }
+    throw err;
+  }
   // Restore the last validated account scope before any window, IPC handler,
   // or meeting flow can read or create notes. Offline launches keep the
   // account's data visible; a stale or rotated credential fails the hash
