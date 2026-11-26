@@ -103,9 +103,18 @@ function configureChannelUserDataPath() {
     return;
   }
 
+  // Optional per-instance isolation for non-production channels (e.g. one dev
+  // Electron per git worktree). Electron's single-instance lock lives in the
+  // userData dir, so a distinct suffix gives each instance its own lock and
+  // profile. Unset keeps the shared `<dir>-<channel>` path.
+  const rawInstance = (process.env.OPENWHISPR_DEV_INSTANCE || "").trim();
+  const instanceSuffix = rawInstance
+    .replace(/[^A-Za-z0-9._-]+/g, "-")
+    .replace(/^[-.]+|[-.]+$/g, "")
+    .slice(0, 64);
   const isolatedPath = path.join(
     app.getPath("appData"),
-    `${FORK_IDENTITY.USER_DATA_DIR}-${APP_CHANNEL}`
+    `${FORK_IDENTITY.USER_DATA_DIR}-${APP_CHANNEL}${instanceSuffix ? `-${instanceSuffix}` : ""}`
   );
   app.setPath("userData", isolatedPath);
 }
@@ -280,6 +289,13 @@ if (!protocolRegistered) {
 const gotSingleInstanceLock = app.requestSingleInstanceLock();
 
 if (!gotSingleInstanceLock) {
+  if (APP_CHANNEL !== "production") {
+    console.warn(
+      `[Startup] Another ${APP_CHANNEL} instance holds the single-instance lock on ${app.getPath(
+        "userData"
+      )}; exiting. Set OPENWHISPR_DEV_INSTANCE=<name> to run an isolated instance.`
+    );
+  }
   app.exit(0);
 }
 
