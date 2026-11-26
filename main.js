@@ -543,13 +543,15 @@ function initializeCoreManagers() {
           "unset so the native module is rebuilt against this Electron's ABI, then relaunch.",
         { error: message }
       );
-      dialog.showErrorBox(
-        "Native module needs a rebuild",
+      // Rethrow with an actionable message instead of exiting here: returning
+      // would let startApp() keep running with no databaseManager. Its
+      // .catch() already shows the startup error dialog and exits(1).
+      const abiError = new Error(
         "A native module (better-sqlite3) was built for a different Node/Electron version. " +
-          "Run `node scripts/rebuild-native-deps.js` (or `npm run postinstall`) and restart the app."
+          "Run `node scripts/rebuild-native-deps.js` (or `npm run postinstall`) and restart the app.",
+        { cause: err }
       );
-      app.exit(1);
-      return;
+      throw abiError;
     }
     throw err;
   }
