@@ -118,7 +118,31 @@ try {
   await Promise.all(runnable.map((seat) => proveSeat(seat, states[seat])));
   await proveClaudeGate();
 } finally {
-  await fs.promises.rm(workDir, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
+  // A killed grok child (or its tree) can still hold workDir as its cwd for a
+  // moment after the runner's own tree-kill/close wait resolves, especially on
+  // Windows after an idle-timeout kill. Do not let that EPERM/EBUSY escape the
+  // script: give it a short grace period and retry once before giving up.
+  try {
+    await fs.promises.rm(workDir, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
+  } catch (error) {
+    if (error && (error.code === "EPERM" || error.code === "EBUSY")) {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      try {
+        await fs.promises.rm(workDir, {
+          recursive: true,
+          force: true,
+          maxRetries: 10,
+          retryDelay: 200,
+        });
+      } catch (retryError) {
+        console.error(
+          `warning: could not remove ${workDir} (${retryError && retryError.code}); it is safe to delete later`
+        );
+      }
+    } else {
+      console.error(`warning: could not remove ${workDir} (${error && error.code})`);
+    }
+  }
 }
 
 process.exit(failed ? 1 : 0);
