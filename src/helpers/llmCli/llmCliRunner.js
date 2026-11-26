@@ -327,16 +327,44 @@ function createRunner({
       for (const t of timers.splice(0)) clearTimeout(t);
       if (signal) signal.removeEventListener("abort", onAbort);
       if (runDir) {
-        try {
-          await fs.promises.rm(runDir, {
-            recursive: true,
-            force: true,
-            maxRetries: 10,
-            retryDelay: 100,
-          });
-        } catch (error) {
-          log("llm-cli run dir cleanup failed", error && error.code);
-        }
+        // On Windows a killed child (or a descendant taskkill missed, or a
+        // still-shutting-down process in its tree) can hold this directory as
+        // its cwd for a short time after close/taskkill resolve. A single
+        // EPERM/EBUSY here must not throw out of runStream: retry the rm a
+        // few more times with a backoff, and if it still cannot be removed,
+        // log and move on rather than let a removable-seconds-later dir fail
+        // the run or the caller's process.
+        const removeRunDir = async () => {
+          try {
+            await fs.promises.rm(runDir, {
+              recursive: true,
+              force: true,
+              maxRetries: 10,
+              retryDelay: 100,
+            });
+            return;
+          } catch (error) {
+            if (error && (error.code === "EPERM" || error.code === "EBUSY")) {
+              // Give whatever process still holds the dir (a lagging tree-kill
+              // on Windows) a little more time, then try once more.
+              await new Promise((resolve) => setTimeout(resolve, 500));
+              try {
+                await fs.promises.rm(runDir, {
+                  recursive: true,
+                  force: true,
+                  maxRetries: 10,
+                  retryDelay: 200,
+                });
+                return;
+              } catch (retryError) {
+                log("llm-cli run dir cleanup failed", retryError && retryError.code);
+                return;
+              }
+            }
+            log("llm-cli run dir cleanup failed", error && error.code);
+          }
+        };
+        await removeRunDir();
       }
       token = null;
       active.delete(seat);
