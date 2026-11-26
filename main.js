@@ -532,7 +532,27 @@ function initializeCoreManagers() {
 
   windowManager = new WindowManager();
   hotkeyManager = windowManager.hotkeyManager;
-  databaseManager = new DatabaseManager();
+  try {
+    databaseManager = new DatabaseManager();
+  } catch (err) {
+    const message = String(err?.message || err);
+    if (message.includes("NODE_MODULE_VERSION") || err?.code === "ERR_DLOPEN_FAILED") {
+      debugLogger.error(
+        "better-sqlite3 was built for a different Node/Electron ABI than this Electron binary. " +
+          "Run `npm run postinstall` (node scripts/rebuild-native-deps.js) with ELECTRON_RUN_AS_NODE " +
+          "unset so the native module is rebuilt against this Electron's ABI, then relaunch.",
+        { error: message }
+      );
+      dialog.showErrorBox(
+        "Native module needs a rebuild",
+        "A native module (better-sqlite3) was built for a different Node/Electron version. " +
+          "Run `node scripts/rebuild-native-deps.js` (or `npm run postinstall`) and restart the app."
+      );
+      app.exit(1);
+      return;
+    }
+    throw err;
+  }
   // Restore the last validated account scope before any window, IPC handler,
   // or meeting flow can read or create notes. Offline launches keep the
   // account's data visible; a stale or rotated credential fails the hash
