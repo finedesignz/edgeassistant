@@ -30,6 +30,7 @@ See: .planning/PROJECT.md (updated 2026-11-08)
 
 - Phases 1-7 merged. Plans: 12 of 14 complete; 06-03 BLOCKED (gate 4), 06-04 PARTIAL (server proofs only). Requirements checked: CI-02, CI-04, AUTH-01, STT-03 (PRs #17, #18, #19 merged), AUTH-05 re-homed to Phase 7 (fork `isPaid` = offline Titanium license; lookup endpoint not built, tiers deferred to v2 AUTH-08).
 - Phase 6 production proof (2026-11-20, https://stt.titaniumlabs.us, Coolify deploy xgi4idzkb1hny6prghtlazeb): `/healthz` 200, `verify-stream-segments` PASS, `verify-chat-completions` PASS, web search 200, OAuth relay 302 (valid state) / 400 (malformed). See `phases/06-hosted-services/06-04-SUMMARY.md`.
+- Phase 8 (LLM subscription connect) merged with caveats: 08-04 partial, see `phases/08-llm-subscription-connect/08-VERIFICATION.md` UNVERIFIED list.
 - Release: v1.10.5 signed DRAFT on `finedesignz/edgeassistant`.
 - stt-api prod fix kept: `limits_memory` 4096m (was 256m below the 2048m reservation).
 

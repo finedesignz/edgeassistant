@@ -147,9 +147,9 @@ Plans:
 | ----- | ------ | ----- | -------- |
 | 1     | ✓      | 1/1   | 100%     |
 | 2     | ✓      | 1/1   | 100%     |
-| 3     | ◆      | 1/1   | code merged (PR #11); AUTH-01 in review (PR #18), UI round trip pending |
-| 4     | ◆      | 1/2   | code merged (PR #11, stt-api PR #26); STT-03 in review (PR #19), end-to-end dictation pending |
-| 5     | ○      | 0/2   | 0%       |
-| 6     | ○      | 0/4   | 0%       |
-| 7     | ○      | 0/3   | 0%       |
-| 8     | ◆      | 3/4   | 75%      |
+| 3     | ◆      | 1/1   | merged (PRs #11, #18); sign-in round trip with a real license unproven |
+| 4     | ✓      | 2/2   | merged (PR #11, #19, stt-api #26); real-license dictation unproven |
+| 5     | ✓      | 2/2   | merged (stt-api #27, #22) |
+| 6     | ◆      | 2/4   | 06-03 blocked (owner OAuth apps), 06-04 partial |
+| 7     | ✓      | 3/3   | merged (#21); FEAT-06 partial |
+| 8     | ◆      | 3/4   | merged; 08-04 partial (live seat chat, consent dialog, sign-out unexercised) |
