@@ -1,0 +1,49 @@
+name: Windows Tests
+
+# Runs the unit suite on a Windows runner so Windows-only failures reproduce in CI,
+# not only on a developer machine. No signing secrets are used.
+#
+# Informational (continue-on-error): upstream's suite is written for Linux/macOS CI. The ~20
+# Windows failures seen so far are test portability, not product defects: POSIX path
+# expectations (/tmp, /Applications), tests of Linux/macOS-only code (COSMIC, linuxKeyManager,
+# linuxAutostart, permissionGuide), unix sockets, and EPERM on temp-dir cleanup. The upstream-owned
+# tests stay unchanged to keep upstream syncs conflict-free; read the failures in the job log.
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "src/**"
+      - "test/**"
+      - "main.js"
+      - "preload.js"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/windows-tests.yml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test-windows:
+    runs-on: windows-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: "npm"
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+      - name: Build better-sqlite3 for the runner's node
+        run: npm rebuild better-sqlite3
+      - name: Run tests
+        run: npm test
+        env:
+          ELECTRON_OVERRIDE_DIST_PATH: ${{ runner.temp }}
